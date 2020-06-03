@@ -1,0 +1,2107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"8.0.0-rc.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="​        Tomcat：由Apache组织提供的一种Web服务器，提供对jsp和Servlet的支持。它是一种轻量级的javaWeb容器（服务器），也是当前应用最广的JavaWeb服务器（免费）。 ​        Java web，是用java技术来解决相关web互联网领域的技术的总称。web包括：web服务器和web客户端两部分。java在最早web客户端的应用有java applet">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tomcat学习笔记">
+<meta property="og:url" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="晓晨の博客">
+<meta property="og:description" content="​        Tomcat：由Apache组织提供的一种Web服务器，提供对jsp和Servlet的支持。它是一种轻量级的javaWeb容器（服务器），也是当前应用最广的JavaWeb服务器（免费）。 ​        Java web，是用java技术来解决相关web互联网领域的技术的总称。web包括：web服务器和web客户端两部分。java在最早web客户端的应用有java applet">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image003.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image005.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image006.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image007.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image009.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image011.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image013.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image015.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image016.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image018.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image019.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image021.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image022.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image024.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image025.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image027.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image029.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image031.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image033.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image035.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image037.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image039.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image041.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image043.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image045.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image047.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image049.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image050.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image052.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image054.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image056.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image058.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image060.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image062.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image064.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image065.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image067.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image068.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image069.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image070.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image071.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image073.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image075.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image077.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image079.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image081.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image082.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image084.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image085.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image087.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image089.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image090.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image092.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image094.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image096.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image098.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image100.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image102.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image103.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image104.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image105.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image106.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image107.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image108.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image110.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image112.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image114.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image116.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image118.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image120.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image122.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image124.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image126.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image128.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image130.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image131.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image133.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image135.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image137.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image139.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image141.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image143.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image145.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image147.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image149.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image151.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image153.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image155.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image157.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image159.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image161.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image162.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image164.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image166.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image167.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image169.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image170.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image172.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image174.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image176.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image178.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image180.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image182.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image184.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image186.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image188.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image190.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image192.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image194.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image196.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image198.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image200.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image202.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image204.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image206.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image208.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image210.jpg">
+<meta property="article:published_time" content="2020-06-03T04:02:44.000Z">
+<meta property="article:modified_time" content="2020-06-03T04:06:54.055Z">
+<meta property="article:author" content="晓晨">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image003.jpg">
+
+<link rel="canonical" href="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Tomcat学习笔记 | 晓晨の博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">晓晨の博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">0</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">0</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">7</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/touxiang.jpg">
+      <meta itemprop="name" content="晓晨">
+      <meta itemprop="description" content="乱世浮尘，不堪遥望，唯有情意，晨光依旧">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="晓晨の博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Tomcat学习笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-06-03 12:02:44 / 修改时间：12:06:54" itemprop="dateCreated datePublished" datetime="2020-06-03T12:02:44+08:00">2020-06-03</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>​        Tomcat：由Apache组织提供的一种Web服务器，提供对jsp和Servlet的支持。它是一种轻量级的javaWeb容器（服务器），也是当前应用最广的JavaWeb服务器（免费）。</p>
+<p>​        Java web，是用java技术来解决相关web互联网领域的技术的总称。web包括：web服务器和web客户端两部分。<br>java在最早web客户端的应用有java applet程序，不过这种技术在很久之前就已经被淘汰了。java在服务器端的应用非常丰富，比如Servlet，jsp和第三方框架等等。java技术对web领域的发展注入了强大的动力，简单的说，就是使用java语言实现浏览器可以访问的程序内容。称之为Java Web。</p>
+<a id="more"></a>
+
+
+
+<p>课程内容</p>
+<p>Tomcat基础</p>
+<p>Tomcat架构</p>
+<p>Jasper</p>
+<p>Tomcatfuwuqi guanli </p>
+<p>Web应用配置</p>
+<p>Tomcat管理配置</p>
+<p>JVM配置</p>
+<p>Tomcat集群</p>
+<p>Tomcat安全</p>
+<p>Tomcat性能调优</p>
+<p>Tomcat附件功能</p>
+<p>特别参考：<a href="https://www.w3cschool.cn/tomcat/" target="_blank" rel="noopener">https://www.w3cschool.cn/tomcat/</a></p>
+<h2 id="第一节：Tomcat相关基础"><a href="#第一节：Tomcat相关基础" class="headerlink" title="第一节：Tomcat相关基础"></a>第一节：Tomcat相关基础</h2><h3 id="1-1-web概念"><a href="#1-1-web概念" class="headerlink" title="1-1.    web概念"></a>1-1.    web概念</h3><p>l  软件架构</p>
+<p>Ø  c/s：客户端/服务器端  例如：QQ、360等</p>
+<p>Ø  b/s：浏览器/服务器端  例如：京东、网易、淘宝等网页应用</p>
+<p>l  资源分类</p>
+<p>Ø  静态资源：所有用户访问后，得到的结果都是一样的、称为静态资源，静态资源可以直接被浏览器解析。</p>
+<p>Ø  如：html、css、JavaScript、jpg等</p>
+<p>Ø  动态资源：每个用户访问相同资源后，得到的结果可能是不一样的、称为动态资源，动态资源被访问后，需要先转换为静态资源，在返回给浏览器，通过浏览器进行解析。</p>
+<p>Ø  如：servlet、jep、php、asp等</p>
+<p>l  网络通信三要素</p>
+<p>Ø  IP：计算机在网络中的唯一标识</p>
+<p>Ø  端口：应用程序在计算机中的唯一标识</p>
+<p>Ø  传输协议；规定了数据传输的规则</p>
+<p>TCP：安全传输、三次握手、速度稍慢</p>
+<p>UDP：不可靠传输、传输速度快</p>
+<p>l  Web访问中的角色和协议</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image003.jpg" alt="img"></p>
+<p> Web访问的整个过程中，从大方面讲，具有四个角色。而他们之间的通信依赖的是三个协议</p>
+<p>Ø  HTTP协议要求，通信双方，即浏览器与服务器双方，都需要按照指定的格式发出请求与响应。对方按照协议，即事先的约定，对对方发送来的信息进行解析。</p>
+<p>Ø  Servlet 协议要求，若程序员要开发完成某一具体业务的服务端程序，则必须实现 Servlet接口，使用ServletAPI 进行数据传递。</p>
+<p>Ø  JDBC协议要求，服务器端程序若要连接并操作数据库，则需要按照JDBC协议中规定的方式（接口方法）获取DB连接、进行soL的执行、进行结果的获取。而JDBC协议（接口）的实现，均由数据库厂商完成，放于数据库厂商提供的数据库驱动Jar包中了。所以，我们连接不同的数据库，就需要导入不同的数据库驱动Jar包，就是这个原因。</p>
+<p>l  JavaEE协议</p>
+<p>Servlet 协议是JavaEE协议的一部分。JavaEE协议即进行 JavaWeb开发的一套APl，除了包含Servlet协议外，还包含JSp协议、JSTL协议、JPA协议等。</p>
+<h3 id="1-2-常见的WEB服务器软件"><a href="#1-2-常见的WEB服务器软件" class="headerlink" title="1-2.    常见的WEB服务器软件"></a>1-2.    常见的WEB服务器软件</h3><p>l  webLogic | oracle公司产品：大型的JavaEE服务器，支持所有的JavaEE规范、收费。</p>
+<p>l  webSphere | IBM公司产品：大型的JavaEE服务器，支持所有的JavaEE规范、收费。</p>
+<p>l  JBOSS | JBOSS公司产品：大型的JavaEE服务器，支持所有的JavaEE规范、收费。</p>
+<p>l  Tomcat | Apache基金组织产品：中小型的JavaEE服务器，仅支持少量的JavaEE规范servlet/jsp、开源。</p>
+<h3 id="1-3-Tomcat安装及目录结构（以Windows为例）"><a href="#1-3-Tomcat安装及目录结构（以Windows为例）" class="headerlink" title="1-3.    Tomcat安装及目录结构（以Windows为例）"></a>1-3.    Tomcat安装及目录结构（以Windows为例）</h3><p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image005.jpg" alt="img"></p>
+<p>下载地址：<a href="https://tomcat.apache.org/download-80.cgi" target="_blank" rel="noopener">https://tomcat.apache.org/download-80.cgi</a></p>
+<p>l  下载安装java并配置环境变量</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image006.png" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image007.png" alt="img"></p>
+<p>l  Tomcat目录结构</p>
+<p>Ø  bin目录：存放可执行文件</p>
+<p>Ø  conf目录：存储配置文件</p>
+<p>logging.properties：日志配置文件</p>
+<p>server.xml：当前Tomcat配置信息</p>
+<p>tomcat-user.xml：当前访问Tomcat用户及用户角色信息</p>
+<p>web.xml：Tomcat中部署的所有应用的信息</p>
+<p>Ø  lib目录：存放Tomcat依赖的一些lib包文件</p>
+<p>Ø  logs目录：存放各类日志文件</p>
+<p>Ø  temp目录：临时文件目录</p>
+<p>Ø  webapps目录：webapp应用部署目录</p>
+<p>Ø  work目录：存放jsp文件编译之后形成的java源码文件</p>
+<p>l  Tomcat启动停止（确保已安装JDK环境）</p>
+<p>Ø  执行bin/startup.bat（sh）文件</p>
+<p>Ø  执行bin/shudown.bat（sh）文件</p>
+<h2 id="第二节：Tomcat架构"><a href="#第二节：Tomcat架构" class="headerlink" title="第二节：Tomcat架构"></a>第二节：Tomcat架构</h2><h3 id="2-1-HTTP工作原理"><a href="#2-1-HTTP工作原理" class="headerlink" title="2-1. HTTP工作原理"></a>2-1. HTTP工作原理</h3><p>HTTP协议是浏览器与服务器之间的数据传输协议。作为应用层协议，HTTP是基于tcp/ip协议来传输数据的，HTTP协议下设计数据包传输，规定了客户端和服务器之间的通信格式。</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image009.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image011.jpg" alt="img"></p>
+<h3 id="2-2-Tomcat整体架构"><a href="#2-2-Tomcat整体架构" class="headerlink" title="2-2. Tomcat整体架构"></a>2-2. Tomcat整体架构</h3><p>l  HTTP服务器请求处理流程</p>
+<p> 浏览器发送给服务器的是一个http格式的请求，HTTP服务器收到这个请求后，需要调用服务器程序来处理，所谓的服务器程序就是java类，一般来说不通的请求需要由不同的java类来处理。</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image013.jpg" alt="img"></p>
+<p>l  servlet容器工作流程</p>
+<p> 为了解耦，HTTP服务器不直接调用servlet，而是把请求交给servlet容器来处理</p>
+<p>Ø  Web客户向Servlet容器（tomcat）发出Http请求；</p>
+<p>Ø  Servlet容器解析Web客户的Http请求；</p>
+<p>Ø  Servlet容器创建一个HttpRequest对象，在这个对象中封装Http请求信息；</p>
+<p>Ø  Servlet容器创建一个HttpResponse对象；</p>
+<p>Ø  Servlet容器调用HttpServlet的service方法，把HttpRequest和HttpResponse对象作为service方法的参数传给HttpServlet对象；</p>
+<p>*HttpServlet事实上是servlet的一种子类实例也是最一般的实例。当编写一个servlet时,必须直接或间接实现servlet接口,最可能实现的方法就是扩展javax.servlet.genericservlet或javax.servlet.http.httpservlet，其中genericservlet类提供了servlet接口的基本实现,httpservlet类扩展了genericservlet并且提供了servlet接口中具体于http的实现。</p>
+<p>Ø  HttpServlet调用HttpRequest的有关方法，获取HTTP请求信息；</p>
+<p>Ø  HttpServlet调用HttpResponse的有关方法，生成响应数据；</p>
+<p>*一般通过HttpServletRequest和HttpServletResponse获取HTTP请求信息和返回响应。事实上servlet理论上可以处理多种形式的请求响应形式 http只是其中之一 所以HttpServletRequest HttpServletResponse分别是ServletRequest和ServletResponse的子类。一般，HttpServlet对应HttpServletRequest和HttpServletResponse。</p>
+<p>Ø  Servlet容器把HttpServlet的响应结果传给Web客户。</p>
+<p>l  Tomcat和Servlet的关系</p>
+<p>Tomcat 是Web应用服务器,是一个Servlet/JSP容器. Tomcat 作为Servlet容器,负责处理客户请求,把请求传送给Servlet,并将Servlet的响应传送回给客户.而Servlet是一种运行在支持Java语言的服务器上的组件. Servlet最常见的用途是扩展Java Web服务器功能,提供非常安全的,可移植的,易于使用的CGI替代品.</p>
+<p>l  Tomcat整体架构</p>
+<p>Ø  处理Socket连接：负责网络字节流与Request（请求）和Response（响应）对象的转化</p>
+<p>Ø  加载和管理Servlet，以及具体处理Request请求</p>
+<p> 因此Tomcat涉及了两个核心组件：连接器（Connector）和容器（Container）来分别做着两件事情，连接器负责对外交流、容器负责内部处理。</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image015.jpg" alt="img"></p>
+<h3 id="2-3-Coyote连接器架构介绍"><a href="#2-3-Coyote连接器架构介绍" class="headerlink" title="2-3. Coyote连接器架构介绍"></a>2-3. Coyote连接器架构介绍</h3><p>  Coyote是Tomcat的连接器框架的名称，是Tomcat服务器提供给客户端访问的外部接口，客户端通过Coyote与服务器建立连接，发送请求并接受响应。</p>
+<p> Coyote封装了底层的网络通信（socket请求及响应处理），为Catalina容器提供了统一的接口、是Ccatalina容器与具体的请求协议及IO操作方式完全解耦。</p>
+<p>Coyote 将socket输入转换封装为Request对象,交由Catalina容器进行处理,处理请求完成后, catalina通过coyote 提供的Response 对象将结果写入输出流.</p>
+<p>Coyote作为独立的模块,只负责具体协议和IO的相关操作，与servlet 规范实现没有直接关系,因此即便是Request和Response对象也并末实现servlet规范对应的接口，而是在catalina 中将他们进一步封装为servletRequest 和servletResponse</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image016.png" alt="img"></p>
+<p>l  IO模型与协议</p>
+<p>在Coyote中，Tomcat支持多种IO模型和应用层协议</p>
+<p>l  Tomcat支持的IO模型</p>
+<table>
+<thead>
+<tr>
+<th>IO模型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>NIO</td>
+<td>非阻塞IO、采用Java NIO类库实现</td>
+</tr>
+<tr>
+<td>NIO2</td>
+<td>异步IO、采用JDK7最新的NIO2类库实现</td>
+</tr>
+<tr>
+<td>APR</td>
+<td>采用Apache可移植运行库实现、是C/C++编写的本地库</td>
+</tr>
+</tbody></table>
+<p>l  Tomcat支持的应用层协议</p>
+<table>
+<thead>
+<tr>
+<th>应用层协议</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>HTTP/1.1</td>
+<td>大部分Web引用采用的访问协议</td>
+</tr>
+<tr>
+<td>AJP</td>
+<td>用于和Web服务器集成、以实现对静态资源优化以及集群部署</td>
+</tr>
+<tr>
+<td>HTTP/2.0</td>
+<td>HTTP2.0大幅度提升了web性能、下一代HTTP协议</td>
+</tr>
+</tbody></table>
+<p>l  协议分层</p>
+<table>
+<thead>
+<tr>
+<th>应       用    HTTP     AJP      HTTP2  层         （Processor）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>传  输    NIO      NIO2      APR  层         （Endpoint）</td>
+</tr>
+</tbody></table>
+<h3 id="2-4-Coyote连接器组件"><a href="#2-4-Coyote连接器组件" class="headerlink" title="2-4. Coyote连接器组件"></a>2-4. Coyote连接器组件</h3><p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image018.jpg" alt="img"></p>
+<p>l  连接器中的各个组件的作用如下</p>
+<p>Ø  EndPoint : Coyote 通信端点,即通信监听的接口。是具体socket接收和发送处理器,是对传输层的抽象,因此EndPoint用来实现TCP/IP协议的。</p>
+<p>Tomcat 并没有EndPoint接口，而是提供了一个抽象类AbstractEndpoint，里面定义了两个内部类 : Acceptor和SocketProcessor. Acceptor用于监听socket连接请求。SocketProcessor用于处理接收到的socket请求 ,它实现Runnable接口,在Run方法里调用协议处理组件rocessor进行处理。为了提高处理能力, socketProcessor被提交到线程池来执行。而这个线程池叫作执行器( Executor) ,我在后面的专栏会详细介绍Tomca t如何扩展原生的Java线程池。</p>
+<p>Ø  Processor : coyote 协议处理接口，如果说EndPoint是 用来实现rCP/ IP协议的,那么Processor用来实现HTTP协议. Processor接收来自EndPoint的socket ,读取字节流解析成Tomcat Request和Response对象 ,并通过Adapter将其提交到容器处理，Processor是对应用层协议的抽象。</p>
+<p>Ø  protocolHandler: coyote 协议接口，通过Endpoint 和processor ，实现针对具体协议的处理能力。 Tomcat 按照协议和I/0提供了6个实现类: AjpNioProtocol ，AjpAprProtoco1， AjpNio2Protocol , Http11NioProtocol,Http11Nio2Protocol , Http11AprProtoco1.我们在配置tomcat/conf/server.xml时，至少要指定具体的protocolHandler，当然也可以指定协议名称，如: HTTP/1.1 , 如果安装了APR,那么将使用Http11AprProtocol，否则使用Http11NioProtocol 。</p>
+<h3 id="2-5-Catalina容器架构"><a href="#2-5-Catalina容器架构" class="headerlink" title="2-5. Catalina容器架构"></a>2-5. Catalina容器架构</h3><p>Tomcat是一个由一系列可配置的组件构成的web容器,而catalina是Tomcat的servlet容器。</p>
+<p>Catalina是servlet容器实现，包含了之前讲到的所有的容器组件,以及后续章节涉及到的安全、会话、集群、管理等Servlet容器架构的各个方面。它通过松耦合的方式集成coyote ,以完成按照请求协议进行数据读写。同时,它还包括我们的启动入口、she11程序等。</p>
+<p>l  Catalina地位</p>
+<p>Tomcat的模块分层结构图</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image019.png" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image021.jpg" alt="img"></p>
+<p> 如上图所示，Catalina负责管理server。而server表示者整个服务器。server’ 下面有多个服务service。每个服务都包含着多个连接器组件connector ( Coyote实现)和一个容器组件container. 在Tomcat 启动的时候，会初始化一 个Catalina的实例。</p>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>职责</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Catalina</td>
+<td>负责解析Tomcat的配置文件,以此来创建服务器server组件,并根据命令来对其进行管理</td>
+</tr>
+<tr>
+<td>Server</td>
+<td>服务器表示整个catalina servlet容器以及其它组件 ,负责组装并启动servlet引擎, Tomcat连接器。server通过实现Lifecycle接口,提供了一种优雅的启动和关闭整个系统的方式</td>
+</tr>
+<tr>
+<td>Service</td>
+<td>服务是server内部的组件, 一个server包含多个service.它将若干个connector组件绑定到一个Container (  Engine)上</td>
+</tr>
+<tr>
+<td>Connector</td>
+<td>连接器，处理与客户端的通信，它负责接收客户请求，然后转给相关的容器处理，最后向客户端返回响应结果</td>
+</tr>
+<tr>
+<td>Container</td>
+<td>容器，负责处理用户的servlet请求，并返回对象给web用户的模块</td>
+</tr>
+</tbody></table>
+<p>l  Container容器结构</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image022.png" alt="img"></p>
+<p>l  各个组件含义</p>
+<table>
+<thead>
+<tr>
+<th>容器</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Engine</td>
+<td>表示整个catalina的servlet引擎.用来管理多个虚拟站点, - -个service最多只能有一个Engine. 但是一个引擎可包含多个Host</td>
+</tr>
+<tr>
+<td>Host</td>
+<td>代表一个虚拟主机，或者说一个站点，可以给Tomcat配置多个虚拟主机地址，而一一个虚拟主机下可包含多个Context</td>
+</tr>
+<tr>
+<td>Context</td>
+<td>表示一个Web应用程序,一个web应用可包含多个wrapper</td>
+</tr>
+<tr>
+<td>Wrapper</td>
+<td>表示一个servlet，wrapper作为容器中的最底层,不能包含子容器</td>
+</tr>
+</tbody></table>
+<p>l  Tomcat的server.xml配置文件格式</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image024.png" alt="https://images2018.cnblogs.com/blog/1001990/201805/1001990-20180525221537823-28419495.png"></p>
+<p>通过直接结构图可以看出server.xml文件中的元素可以分为以下4类：</p>
+<p>（1）顶层元素：<Server>和<Service></Service></Server></p>
+<p><Server>元素是整个配置文件的根元素，<Service>元素则代表一个Engine元素以及一组与之相连的Connector元素。</Service></Server></p>
+<p>（2）连接器：<Connector></Connector></p>
+<p><Connector>代表了外部客户端发送请求到特定Service的接口；同时也是外部客户端从特定Service接收响应的接口。</Connector></p>
+<p>（3）容器：<Engine><Host><Context></Context></Host></Engine></p>
+<p>容器的功能是处理Connector接收进来的请求，并产生相应的响应。Engine、Host和Context都是容器，但它们不是平行的关系，而是父子关系：Engine包含Host，Host包含Context。一个Engine组件可以处理Service中的所有请求，一个Host组件可以处理发向一个特定虚拟主机的所有请求，一个Context组件可以处理一个特定Web应用的所有请求。</p>
+<p>（4）内嵌组件</p>
+<p>可以内嵌到容器中的组件。实际上，Server、Service、Connector、Engine、Host和Context是最重要的最核心的Tomcat组件，其他组件都可以归为内嵌组件。</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image025.png" alt="img"><Server></Server></p>
+ <Service>
+
+   <Connector>
+
+   <Connector>
+
+   <Engine>
+
+<p>​    <HostA></HostA></p>
+<p>​     <Context></Context></p>
+<p>​      <Wrapper1></Wrapper1></p>
+<p>​      <Wrapper2></Wrapper2></p>
+<p>​     </p>
+<p>​    </p>
+<p>​    <HostB></HostB></p>
+<p>​     <Context></Context></p>
+<p>​      <Wrapper3></Wrapper3></p>
+<p>​      <Wrapper4></Wrapper4></p>
+<p>​     </p>
+<p>​    </p>
+ </Engine></Connector></Connector></Service>
+
+
+
+<p>参考文章：</p>
+<p><a href="https://www.cnblogs.com/f-ck-need-u/p/8120008.html" target="_blank" rel="noopener">https://www.cnblogs.com/f-ck-need-u/p/8120008.html</a></p>
+<p><a href="https://blog.csdn.net/yw_1207/article/details/78711634" target="_blank" rel="noopener">https://blog.csdn.net/yw_1207/article/details/78711634</a> 推荐</p>
+<h3 id="2-6-Tomcat启动流程"><a href="#2-6-Tomcat启动流程" class="headerlink" title="2-6. Tomcat启动流程"></a>2-6. Tomcat启动流程</h3><p>l  Tomcat启动流程图示</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image027.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image029.jpg" alt="img"></p>
+<p>l  Tomcat启动执行操作</p>
+<p>Ø  启动tomcat需要调用bin/startup.bat (在linux 目录下，需要调用bin/startup. sh) 在startup.bat脚本中，调用了catalina .bat。</p>
+<p>Ø  在catalina.bat脚本文件中。调用了Bootstrap中的main方法。</p>
+<p>Ø  在Bootstrap的main方法中调用了init 方法来创建catalina及初始化类加载器。</p>
+<p>Ø  在Bootstrap的main方法中调用了load 方法，在其中又调用了catalina的1oad方法。</p>
+<p>Ø  在catalina的load方法中，需要进行一些初始化的工作， 并需要构造Digester对象，用于解析XML.</p>
+<p>Ø  然后在调用后续组件的初始化操作。。。</p>
+<p>总体来说：1、加载Tomcat的配置文件 2、初始化容器组件 3、监听对应的端口号 4、准备接受客户端请求</p>
+<h3 id="2-7-Tomcat启动涉及组件"><a href="#2-7-Tomcat启动涉及组件" class="headerlink" title="2-7. Tomcat启动涉及组件"></a>2-7. Tomcat启动涉及组件</h3><p>l  Lifecycle接口统一管理生命周期</p>
+<p>由于所有的组件均存在初始化、启动、停止等生命周期方法，拥有生命周期管理的特性，所以Tomcat在设计的时候，基于生命周期管理抽象成了一个接口Lifecycle，而组件Server、Service、Container（容器）、Executor（线程池执行器）、Connector（连接器）组件，都实现了一个生命周期的接口，从而具有了以下生命周期中的核心方法：</p>
+<p>## Container是Catalina容器的核心组件的名称、Connector是Coyote连接器的核心组件名称，是两大Tomcat核心框架组件功能的实现方法，要加以区分并识别对应关系。</p>
+<p>Ø  init（）：初始化组件</p>
+<p>Ø  start（）：启动组件</p>
+<p>Ø  stop（）：停止组件</p>
+<p>Ø  destroy（）：销毁组件</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image031.png" alt="https://upload-images.jianshu.io/upload_images/11798292-f8dd2187a6f10b69.png"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image033.png" alt="这里写图片描述"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image035.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image037.jpg" alt="https://img2018.cnblogs.com/blog/1203643/201901/1203643-20190107124740382-782519025.png"></p>
+<p>l  各组件的默认实现</p>
+<p> 上面我们提到的server、service、Engine、Host、Context都是接口，下图中罗列了这些接口的默认实现类。当前对于Endpoint组件来说，在Tomcat中没有对应的Endpoint接口，但是有一个抽象类AbstractEndpoint，其下有三个实现类：NioEndpoint、Nio2Endpoint、AprEndpoint，这三个实现类，分别对应于前面讲解链接器 Coyote时，提到的链接器支持的三种ro模型：NTo，NIO2，AR，Tomcat8.5版本中，默认采用的是NioEndpoint。</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image039.jpg" alt="img"></p>
+<p> ProtocolHandler:Coyote协议接口，通过封装endpoint和Proc=saox，实现针对具体协议的处理功能。Tomcat按照协议和Io提供了6个实现类。</p>
+<p>Ø  AJP协议：</p>
+<p>1）AjpNioProtocol：采用NIO的IO模型。</p>
+<p>2）AjpNio2Protoco1；采用NIO2的TO模型。</p>
+<p>3）AjPApEProtocol：采用ApR的ro模型，需要依</p>
+<p>Ø  HTTP协议：</p>
+<p>1）Http11NioPrOtOc01：采用NIo的To模型，默认使用的协议（如果服务器没有安装APR）。</p>
+<p>2）Http11Nio2Protoc01：采用Nro2的I0模型。</p>
+<p>3）Http11Ap-Protoco1：采用APR的IO模型，需要依赖于APR库。</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image041.jpg" alt="img"></p>
+<p>参考文章：</p>
+<p><a href="https://www.cnblogs.com/wansw/p/10232613.html" target="_blank" rel="noopener">https://www.cnblogs.com/wansw/p/10232613.html</a></p>
+<h3 id="2-8-从源码分析Tomcat启动流程"><a href="#2-8-从源码分析Tomcat启动流程" class="headerlink" title="2-8. 从源码分析Tomcat启动流程"></a>2-8. 从源码分析Tomcat启动流程</h3><p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image043.jpg" alt="img"></p>
+<p>参考文章：</p>
+<p><a href="https://www.cnblogs.com/zhiyouwu/p/11737697.html" target="_blank" rel="noopener">https://www.cnblogs.com/zhiyouwu/p/11737697.html</a></p>
+<p><a href="https://www.cnblogs.com/Soy-technology/p/11241795.html" target="_blank" rel="noopener">https://www.cnblogs.com/Soy-technology/p/11241795.html</a></p>
+<p><a href="https://www.jianshu.com/p/adeb425a68c2" target="_blank" rel="noopener">https://www.jianshu.com/p/adeb425a68c2</a></p>
+<p><a href="https://www.jianshu.com/p/8d20e1a057b1" target="_blank" rel="noopener">https://www.jianshu.com/p/8d20e1a057b1</a></p>
+<p>视频讲解：<a href="https://www.bilibili.com/video/av67233983?p=13" target="_blank" rel="noopener">https://www.bilibili.com/video/av67233983?p=13</a></p>
+<h3 id="2-9-Tomcat-Debug源码跟踪启动"><a href="#2-9-Tomcat-Debug源码跟踪启动" class="headerlink" title="2-9. Tomcat Debug源码跟踪启动"></a>2-9. Tomcat Debug源码跟踪启动</h3><p>视频讲解：<a href="https://www.bilibili.com/video/av67233983?p=14" target="_blank" rel="noopener">https://www.bilibili.com/video/av67233983?p=14</a></p>
+<p><strong><em>\</em> Tomcat**</strong>默认配置中<strong><strong>HTTP</strong></strong>协议监听<strong><strong>8080</strong></strong>端口，<strong><strong>AJP</strong></strong>协议监听<strong><strong>8009</strong></strong>端口**</p>
+<p>l  <strong>Tomcat**</strong>启动流程总结**</p>
+<p>Ø  从启动流程图中以及源码中，我们可以看出Tomcat的启动过程非常标准化，统一按照生命周期管理接口Lifecycle的定义进行启动。首先调用init（）方法进行组件的逐级初始化操作，然后再调用  atart（）方法进行启动。</p>
+<p>Ø  每一级的组件除了完成自身的处理外，还要负责调用子组件响应的生命周期管理方法，组件与组件之间是松糊合的，因为我们可以很容易的通过配置文件进行修改和替换。</p>
+<h3 id="2-10-Tomcat请求处理流程"><a href="#2-10-Tomcat请求处理流程" class="headerlink" title="2-10. Tomcat请求处理流程"></a>2-10. Tomcat请求处理流程</h3><p>l  <strong>请求流程</strong></p>
+<p> 设计了这么多层次的容器，Tomcat是怎么确定每一个请求应该由哪个wrapper容器里的servlet来处理的呢？答案是，Tomcat是用Mapper组件来完成这个任务的。</p>
+<p>Mapper组件的功能就是将用户求的UR工定位到一个servlet，它的工作原理是：Mapper组件里保存了Web应用的配置信息，其实就是容器组件与访问路径的映射关系，比如Hoat容器里配置的域名、context容器里的Web应用路径，以及rapper容器里servle映射的路径，你可以想象这些配置信息就是一个多层次的Map。T当一个请求到来时，Mapper组件通过解析请求URL里的域名和路径，再到自己保存的Map里去查找，就能定位到一个servlet。请你注意，一个请求UR最后只会定位到一个Wrappax容器，也就是一个Servlet.</p>
+<p>下面的示意图中，就描述了当用户请求链接<a href="http://www.itcast.cn/bbs/findA11之后，是如何找到最终处理业务逻辑的Servlet" target="_blank" rel="noopener">http://www.itcast.cn/bbs/findA11之后，是如何找到最终处理业务逻辑的Servlet</a></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image045.png" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image047.png" alt="img"></p>
+<p>l  详细步骤</p>
+<p>Ø  1) Connector组件Endpoint中的Acceptor监听客户端套接字连接并接收Socket。</p>
+<p>Ø  2) 将连接交给线程池Executor处理，开始执行请求响应任务。</p>
+<p>Ø  3) Processor组件读取消息报文，解析请求行、请求体、请求头，封装成Request对象。</p>
+<p>Ø  4) Mapper组件根据请求行的URL值和请求头的Host值匹配由哪个Host容器、Context容器、Wrapper容器处理请求。</p>
+<p>Ø  5) CoyoteAdaptor组件负责将Connector组件和Engine容器关联起来，把生成的Request对象和响应对象Response传递到Engine容器中，调用 Pipeline。</p>
+<p>Ø  6) Engine容器的管道开始处理，管道中包含若干个Valve、每个Valve负责部分处理逻辑。执行完Valve后会执行基础的 Valve–StandardEngineValve，负责调用Host容器的Pipeline。</p>
+<p>Ø  7) Host容器的管道开始处理，流程类似，最后执行 Context容器的Pipeline。</p>
+<p>Ø  8) Context容器的管道开始处理，流程类似，最后执行 Wrapper容器的Pipeline。</p>
+<p>Ø  9) Wrapper容器的管道开始处理，流程类似，最后执行 Wrapper容器对应的Servlet对象的 处理方法。</p>
+<p>参考文章：</p>
+<p><a href="https://blog.csdn.net/LeiXiaoTao_Java/article/details/85003421" target="_blank" rel="noopener">https://blog.csdn.net/LeiXiaoTao_Java/article/details/85003421</a></p>
+<p><a href="https://www.cnblogs.com/wansw/p/10244039.html" target="_blank" rel="noopener">https://www.cnblogs.com/wansw/p/10244039.html</a></p>
+<p><a href="https://www.cnblogs.com/hggen/p/6264475.html" target="_blank" rel="noopener">https://www.cnblogs.com/hggen/p/6264475.html</a></p>
+<p><a href="https://blog.csdn.net/HcJsJqJSSM/article/details/82937023" target="_blank" rel="noopener">https://blog.csdn.net/HcJsJqJSSM/article/details/82937023</a> 推荐</p>
+<h3 id="2-11-源码跟踪Tomcat请求处理流程"><a href="#2-11-源码跟踪Tomcat请求处理流程" class="headerlink" title="2-11. 源码跟踪Tomcat请求处理流程"></a>2-11. 源码跟踪Tomcat请求处理流程</h3><p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image049.jpg" alt="img"></p>
+<p>   在前面所讲解的Tomcat的整体架构中，我们发现Tomcat中的各个组件各司其职，组件之间松耦合，确保了整体架构的可伸缩性和可拓展性，那么在组件内部，如何增强组件的灵活性和拓展性呢？ 在Tomcat中，每个Container组件采用责任链模式来完成具体的请求处理。</p>
+<p>在Tomcat中定义了Pipeline 和 Valve 两个接口，Pipeline 用于构建责任链， 后者代表责任链上的每个处理器。Pipeline 中维护了一个基础的Valve，它始终位于Pipeline的末端（最后执行），封装了具体的请求处理和输出响应的过程。当然，我们也可以调用addValve()方法， 为Pipeline 添加其他的Valve， 后添加的Valve 位于基础的Valve之前，并按照添加顺序执行。Pipiline通过获得首个Valve来启动整合链条的执行 。</p>
+<h2 id="第三节：Jasper引擎"><a href="#第三节：Jasper引擎" class="headerlink" title="第三节：Jasper引擎"></a>第三节：Jasper引擎</h2><h3 id="3-1-Jasper引擎介绍"><a href="#3-1-Jasper引擎介绍" class="headerlink" title="3-1. Jasper引擎介绍"></a>3-1. Jasper引擎介绍</h3><p>l  Jasper简介</p>
+<p>  对于基于JSP 的web应用来说，我们可以直接在JSP页面中编写 Java代码，添加第三方的标签库，以及使用EL表达式。但是无论经过何种形式的处理，最终输出到客户端的都是标准的HTML页面（包含js ，css…），并不包含任何的java相关的语法。 也就是说， 我们可以把jsp看做是一种运行在服务端的脚本。 那么服务器是如何将 JSP页面转换为HTML页面的呢？</p>
+<p>Jasper模块是Tomcat的JSP核心引擎，我们知道JSP本质上是一个Servlet。Tomcat使用Jasper对JSP语法进行解析，生成Servlet并生成Class字节码，用户在进行访问jsp时，会访问Servlet，最终将访问的结果直接响应在浏览器端 。另外，在运行的时候，Jasper还会检测JSP文件是否修改，如果修改，则会重新编译JSP文件。</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image050.png" alt="img"></p>
+<h3 id="3-2-Jasper编译方式"><a href="#3-2-Jasper编译方式" class="headerlink" title="3-2. Jasper编译方式"></a>3-2. Jasper编译方式</h3><p>l  <strong>运行时编译</strong></p>
+<p>Tomcat并不会在启动Web应用的时候自动编译JSP文件，而是客户端第一次请求时，才编译需要访问的文件。</p>
+<p>l  <strong>示例**</strong>JSP<strong>**代码</strong></p>
+<p>&lt;%@ page import=”java.text.DateFormat” %&gt;</p>
+<p>&lt;%@ page import=”java.text.SimpleDateFormat” %&gt;</p>
+<p>&lt;%@ page import=”java.util.Date” %&gt;</p>
+<p>&lt;%@ page contentType=”text/html;charset=UTF‐8” language=”java” %&gt;</p>
+<p>&lt;%@ taglib prefix=”c” uri=”<a href="http://java.sun.com/jsp/jstl/core&quot;" target="_blank" rel="noopener">http://java.sun.com/jsp/jstl/core&quot;</a> %&gt;</p>
+<html>
+
+<head>
+
+<title>$Title$</title>
+
+</head>
+
+<body>
+
+<p>&lt;%</p>
+<p>DateFormat dateFormat = new SimpleDateFormat(“yyyy‐MM‐dd</p>
+<p>HH:mm:ss”);</p>
+<p>String format = dateFormat.format(new Date());</p>
+<p>%&gt;</p>
+<p>Hello , Java Server Page 。。。。</p>
+<br>
+
+
+
+<p>&lt;%= format %&gt;</p>
+</body>
+
+</html>
+
+
+
+
+
+<p>l  <strong>编译过程</strong></p>
+<p>Tomcat 在默认的web.xml 中配置了一个org.apache.jasper.servlet.JspServlet，用于处理所有的.jsp 或 .jspx 结尾的请求，该Servlet 实现即是运行时编译的入口。</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image052.jpg" alt="img"></p>
+<p>l  JspServlet处理流程图</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image054.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image056.jpg" alt="img"></p>
+<p>l  编译结果</p>
+<p>Ø  如果在 tomcat/conf/web.xml 中配置了参数scratchdir ， 则jsp编译后的结果，就会存储在该目录下</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image058.jpg" alt="img"></p>
+<p>Ø  如果没有配置该选项， 则会将编译后的结果，存储在Tomcat安装目录下的work/Catalina(Engine名称)/localhost(Host名称)/Context名称 。 假设项目名称为jsp_demo 01</p>
+<p>Ø  如果使用的是 IDEA 开发工具集成Tomcat 访问web工程中的jsp ， 编译后的结果，存放在 ：</p>
+<p>C:\Users\Administrator.IntelliJIdea2019.1\system\tomcat_project_tomcat\work\Catalina\localhost\jsp_demo_01_war_exploded\org\apache\jsp</p>
+<p>l  预编译</p>
+<p>除了运行时编译，我们还可以直接在Web应用启动时， 一次性将Web应用中的所有的JSP页面一次性编译完成。在这种情况下，Web应用运行过程中，便可以不必再进行实时编译，而是直接调用JSP页面对应的Servlet 完成请求处理， 从而提升系统性能。</p>
+<p>Tomcat 提供了一个Shell程序JspC，用于支持JSP预编译，而且在Tomcat的安装目录下提供了一个 catalina-tasks.xml 文件声明了Tomcat 支持的Ant任务， 因此，我们很容易使用 Ant 来执行JSP 预编译 。（要想使用这种方式，必须得确保在此之前已经下载并安装了Apache Ant）。</p>
+<h2 id="第四节：Tomcat服务器配置文件"><a href="#第四节：Tomcat服务器配置文件" class="headerlink" title="第四节：Tomcat服务器配置文件"></a>第四节：Tomcat服务器配置文件</h2><h3 id="4-1-Server-xml配置文件"><a href="#4-1-Server-xml配置文件" class="headerlink" title="4-1. Server.xml配置文件"></a>4-1. Server.xml配置文件</h3><h4 id="4-1-1-Server指令块配置介绍"><a href="#4-1-1-Server指令块配置介绍" class="headerlink" title="4-1-1. Server指令块配置介绍"></a>4-1-1. Server指令块配置介绍</h4><p> Server.xml 是tomcat 服务器的核心配置文件，包含了Tomcat的 Servlet 容器（Catalina）的所有配置。由于配置的属性特别多，我们在这里主要讲解其中的一部分重要配置。</p>
+<p>l <strong>Server</strong></p>
+<p>Server是server.xml的根元素，用于创建一个Server实例，默认使用的实现类是org.apache.catalina.core.StandardServer。</p>
+<Server port="8005" shutdown="SHUTDOWN">
+
+<p>…</p>
+</Server>
+
+<p>Ø  port：Tomcat箭筒的管不服务器的端口</p>
+<p>Ø  shutdown：关闭服务器的指令字符串</p>
+<p>Ø  Server内嵌的子元素（子标签）为Listener、GlobalNamingResources、Service</p>
+<p>l  <strong>Server**</strong>子元素一：** <strong>Listener**</strong>五个默认配置项的含义**</p>
+<p>Ø  &lt;!‐‐ 用于以日志形式输出服务器 、操作系统、JVM的版本信息 ‐‐&gt;</p>
+<Listener classname="org.apache.catalina.startup.VersionLoggerListener">
+
+<p>Ø  &lt;!‐‐ 用于加载（服务器启动） 和 销毁 （服务器停止） APR。 如果找不到APR库， 则会输出日志， 并不影响Tomcat启动 ‐‐&gt;</p>
+<p>&lt;Listener className=”org.apache.catalina.core.AprLifecycleListener”SSLEngine=”on” /&gt;</p>
+<p>Ø  &lt;!‐‐ 用于避免JRE内存泄漏问题 ‐‐&gt;</p>
+<p>&lt;ListenerclassName=”org.apache.catalina.core.JreMemoryLeakPreventionListener” /&gt;</p>
+<p>Ø  &lt;!‐‐ 用户加载（服务器启动） 和 销毁（服务器停止） 全局命名服务 ‐‐&gt;</p>
+<p>&lt;ListenerclassName=”org.apache.catalina.mbeans.GlobalResourcesLifecycleListener”/&gt;</p>
+<p>Ø  &lt;!‐‐ 用于在Context停止时重建Executor 池中的线程， 以避免ThreadLocal 相关的内存泄漏 ‐‐&gt;</p>
+<p>&lt;ListenerclassName=”org.apache.catalina.core.ThreadLocalLeakPreventionListener” /&gt;</p>
+<p>l  <strong>Server**</strong>子元素二：<strong><strong>GlobalNamingResources</strong></strong>定义全局命名服务**</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image060.jpg" alt="img"></p>
+<p>l  <strong>Server**</strong>子元素三：<strong><strong>Service</strong></strong>用于创建<strong><strong>WEB</strong></strong>实例**</p>
+<p>Ø  该元素用于创建 Service 实例，默认使用 org.apache.catalina.core.StandardService。</p>
+<p>Ø  默认情况下，Tomcat 仅指定了Service 的名称， 值为 “Catalina”。</p>
+<p>Ø  Service 可以内嵌的元素为 ： Listener、Executor、Connector、Engine，其中 ：</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  Listener 用于为Service添加生命周期监听器</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  Executor 用于配置Service 共享线程池</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  Connector 用于配置Service 包含的链接器</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  Engine 用于配置Service中链接器对应的Servlet 容器引擎</p>
+<p>Ø  一个Server服务器，可以包含多个Service服务。</p>
+<Service name="Catalina">
+
+<p>…</p>
+</Service>
+
+
+
+<h4 id="4-1-2-Executor指令块配置介绍"><a href="#4-1-2-Executor指令块配置介绍" class="headerlink" title="4-1-2. Executor指令块配置介绍"></a>4-1-2. Executor指令块配置介绍</h4><p>默认情况下，Service并未添加共享线程池配置，如果我们想要添加一个线程池，可以再<Service>下添加如下配置：</Service></p>
+<p>## 在Service中可以存在多个Connector（连接器），如果没有配置Executor（共享线程池），则多个Connector使用的是自己各自的线程池</p>
+<p>&lt;Executor name=”tomcatThreadPool”</p>
+<p>namePrefix=”catalina‐exec‐”</p>
+<p>maxThreads=”200”</p>
+<p>minSpareThreads=”100”</p>
+<p>maxIdleTime=”60000”</p>
+<p>maxQueueSize=”Integer.MAX_VALUE”</p>
+<p>prestartminSpareThreads=”false”</p>
+<p>threadPriority=”5”</p>
+<p>className=”org.apache.catalina.core.StandardThreadExecutor”/&gt;</p>
+<p><strong>##</strong> <strong>此时只是创建了进程池，但是还未指定**</strong>Connector<strong>**使用这个进程池</strong></p>
+<p>l  属性说明</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>name</td>
+<td>线程池名称，用于 Connector中指定</td>
+</tr>
+<tr>
+<td>namePrefix</td>
+<td>所创建的每个线程的名称前缀，一个单独的线程名称为namePrefix+threadNumber</td>
+</tr>
+<tr>
+<td>maxThreads</td>
+<td>池中最大线程数</td>
+</tr>
+<tr>
+<td>minSpareThreads</td>
+<td>活跃线程数，也就是核心池线程数，这些线程不会被销毁，会一直存在</td>
+</tr>
+<tr>
+<td>maxIdleTime</td>
+<td>线程空闲时间，超过该时间后，空闲线程会被销毁，默认值为6000（1分钟），单位毫秒</td>
+</tr>
+<tr>
+<td>maxQueueSize</td>
+<td>在被执行前最大线程排队数目，默认为Int的最大值，也就是广义的无限。除非特殊情况，这个值不需要更改，否则会有请求不会被处理的情况发生</td>
+</tr>
+<tr>
+<td>prestartminSpareThreads</td>
+<td>启动线程池时是否启动 minSpareThreads部分线程。默认值为false，即不启动</td>
+</tr>
+<tr>
+<td>threadPriority</td>
+<td>线程池中线程优先级，默认值为5，值从1到10</td>
+</tr>
+<tr>
+<td>className</td>
+<td>线程池实现类，未指定情况下，默认实现类为:  org.apache.catalina.core.StandardThreadExecutor。如果想使用自定义线程池首先需要实现  org.apache.catalina.Executor接口。</td>
+</tr>
+</tbody></table>
+<h4 id="4-1-3-Connector指令块配置介绍"><a href="#4-1-3-Connector指令块配置介绍" class="headerlink" title="4-1-3. Connector指令块配置介绍"></a>4-1-3. Connector指令块配置介绍</h4><p> Connector 用于创建链接器实例。默认情况下，server.xml 配置了两个链接器，一个支</p>
+<p>持HTTP协议，一个支持AJP协议。因此大多数情况下，我们并不需要新增链接器配置，</p>
+<p>只是根据需要对已有链接器进行优化。</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image062.jpg" alt="img"></p>
+<p>l  属性说明</p>
+<p>Ø  port： 端口号，Connector 用于创建服务端Socket 并进行监听， 以等待客户端请求链接。如果该属性设置为0，Tomcat将会随机选择一个可用的端口号给当前Connector使用。</p>
+<p>Ø  protocol ： 当前Connector 支持的访问协议。 默认为 HTTP/1.1 ， 并采用自动切换机制选择一个基于 JAVA NIO 的链接器或者基于本地APR的链接器（根据本地是否含有Tomcat的本地库判定）。</p>
+<p>如果不希望采用上述自动切换的机制， 而是明确指定协议， 可以使用以下值</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  HTTP协议：</p>
+<p>org.apache.coyote.http11.Http11NioProtocol ， 非阻塞式 Java NIO 链接器</p>
+<p>org.apache.coyote.http11.Http11Nio2Protocol ， 非阻塞式 JAVA NIO2 链接器</p>
+<p>org.apache.coyote.http11.Http11AprProtocol ， APR 链接器</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  AJP协议</p>
+<p>org.apache.coyote.ajp.AjpNioProtocol ， 非阻塞式 Java NIO 链接器</p>
+<p>org.apache.coyote.ajp.AjpNio2Protocol ，非阻塞式 JAVA NIO2 链接器</p>
+<p>org.apache.coyote.ajp.AjpAprProtocol ， APR 链接器</p>
+<p>Ø  connectionTimeOut : Connector 接收链接后的等待超时时间， 单位为 毫秒。 -1 表示不超时</p>
+<p>Ø  redirectPort：当前Connector 不支持SSL请求， 接收到了一个请求， 并且也符合security-constraint 约束， 需要SSL传输，Catalina自动将请求重定向到指定的端口</p>
+<p>Ø  executor ： 指定共享线程池的名称， 也可以通过maxThreads、minSpareThreads等属性配置内部线程池</p>
+<p>Ø  URIEncoding : 用于指定编码URI的字符编码， Tomcat8.x版本默认的编码为 UTF-8 ,Tomcat7.x版本默认为ISO-8859-1</p>
+<p>l  完整配置示例</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image064.jpg" alt="img"></p>
+<h4 id="4-1-4-Engine指令块配置介绍"><a href="#4-1-4-Engine指令块配置介绍" class="headerlink" title="4-1-4. Engine指令块配置介绍"></a>4-1-4. Engine指令块配置介绍</h4><p>Engine作为Servlet引擎的顶级元素，内部可以嵌入：Cluster、Listener、Realm、Valve和Host</p>
+<Engine name="Catalina" defaulthost="localhost">
+
+<p>…</p>
+</Engine>
+
+<p>l  属性说明</p>
+<p>Ø  name： 用于指定Engine 的名称， 默认为Catalina 。该名称会影响一部分Tomcat的存储路径（如临时文件）</p>
+<p>Ø  defaultHost ： 默认使用的虚拟主机名称， 当客户端请求指向的主机无效时， 将交由默认的虚拟主机处理， 默认为localhost</p>
+<h4 id="4-1-5-Host指令块配置介绍"><a href="#4-1-5-Host指令块配置介绍" class="headerlink" title="4-1-5. Host指令块配置介绍"></a>4-1-5. Host指令块配置介绍</h4><p>l  Host 元素用于配置一个虚拟主机， 它支持以下嵌入元素：Alias（别名）、Cluster（Session会话共享）、Listener、Valve（阀门组件，配合Pipeline实现过滤器功能）、Realm（安全域）、Context。</p>
+<p>l  如果在Engine下配置Realm， 那么此配置将在当前Engine下的所有Host中共享。 </p>
+<p>l  同样，如果在Host中配置Realm ， 则在当前Host下的所有Context中共享。</p>
+<p>l  Context中的Realm优先级 &gt; Host 的Realm优先级 &gt; Engine中的Realm优先级。</p>
+<p><strong>## Realm**</strong>（安全域）是<strong><strong>Tomcat</strong></strong>中为<strong><strong>web</strong></strong>应用程序提供访问认证和角色管理的机制**</p>
+<p>l  <strong>命令格式</strong></p>
+<Host name="localhost" appbase="webapps" unpackwars="true" autodeploy="true">
+
+<p>…</p>
+</Host>
+
+
+
+<p>l  <strong>属性说明</strong></p>
+<p>Ø  name: 当前Host通用的网络名称， 必须与DNS服务器上的注册信息一致。 Engine中包含的Host必须存在一个，且名称与Engine的defaultHost设置一致，可以存在多个，且name唯一</p>
+<p>Ø  appBase： 当前Host的应用基础目录， 当前Host上部署的Web应用均在该目录下（可以是绝对目录，相对路径）。默认为webapps</p>
+<p>Ø  unpackWARs： 设置为true， Host在启动时会将appBase目录下war包解压为目录。设置为false， Host将直接从war文件启动</p>
+<p>Ø  autoDeploy： 控制tomcat是否在运行时定期检测并自动部署新增或变更的web应用</p>
+<p>l  <strong>通过给**</strong>Host<strong><strong>添加别名，我们可以实现同一个</strong></strong>Host<strong>**拥有多个网络名称（多个域名）</strong></p>
+<Host name="www.web1.com" appbase="webapps" unpackwars="true" autodeploy="true">
+
+<p><Alias><a href="http://www.web2.com" target="_blank" rel="noopener">www.web2.com</a></Alias></p>
+</Host>
+
+<p>l  <strong>同一个端口下可以配置多个不同域名主机</strong></p>
+<Host name="www.web1.com" appbase="webapps01" unpackwars="true" autodeploy="true">
+
+<p><Alias><a href="http://www.123A.com" target="_blank" rel="noopener">www.123A.com</a></Alias></p>
+</Host>
+
+<Host name="www.web2.com" appbase="webapps02" unpackwars="false" autodeploy="true">
+
+<p><Alias><a href="http://www.456B.com" target="_blank" rel="noopener">www.456B.com</a></Alias></p>
+</Host>
+
+<p>参考文章：</p>
+<p><a href="https://www.w3cschool.cn/tomcat/bym11k98.html" target="_blank" rel="noopener">https://www.w3cschool.cn/tomcat/bym11k98.html</a> Realm理论详解（包含Tomcat 8完整教程）</p>
+<p><a href="https://www.cnblogs.com/lanxuezaipiao/p/4037574.html" target="_blank" rel="noopener">https://www.cnblogs.com/lanxuezaipiao/p/4037574.html</a> 侧重Realm实战详解</p>
+<p><a href="https://www.cnblogs.com/xing901022/p/4552843.html" target="_blank" rel="noopener">https://www.cnblogs.com/xing901022/p/4552843.html</a> 侧重Realm概念详解</p>
+<p><a href="https://www.jianshu.com/p/2b6359daf5c8" target="_blank" rel="noopener">https://www.jianshu.com/p/2b6359daf5c8</a> Valve概念讲解</p>
+<p><a href="https://www.cnblogs.com/hunter-zyg/articles/4754901.html" target="_blank" rel="noopener">https://www.cnblogs.com/hunter-zyg/articles/4754901.html</a> Valve源码详解</p>
+<p><a href="https://www.cnblogs.com/kevingrace/p/9539005.html" target="_blank" rel="noopener">https://www.cnblogs.com/kevingrace/p/9539005.html</a> Cluster概念应用详解</p>
+<h4 id="4-1-6-Context指令块配置介绍"><a href="#4-1-6-Context指令块配置介绍" class="headerlink" title="4-1-6. Context指令块配置介绍"></a>4-1-6. Context指令块配置介绍</h4><p>Context用于配置一个Web应用，默认的配置如下：</p>
+<Context docbase="myApp" path="/myApp">
+
+<p>….</p>
+</Context>
+
+<p>l  属性描述</p>
+<p>Ø  docBase：Web应用目录或者War包的部署路径。可以是绝对路径，也可以是相对于Host appBase的相对路径</p>
+<p>Ø  path：Web应用的Context 路径。如果我们Host名为localhost， 则该web应用访问的根路径为： <a href="http://localhost:8080/myApp" target="_blank" rel="noopener">http://localhost:8080/myApp</a></p>
+<p>它支持的内嵌元素为：CookieProcessor， Loader， Manager，Realm，Resources，WatchedResource，JarScanner，Valve</p>
+<p>&lt;Host name=”<a href="http://www.tomcat.com&quot;" target="_blank" rel="noopener">www.tomcat.com&quot;</a> appBase=”webapps” unpackWARs=”true”</p>
+<p>autoDeploy=”true”&gt;</p>
+<p><Context docbase="D:\servlet_project03" path="/myApp"></Context></p>
+<p><em>##</em> <em>应用在<strong>Host</strong>模块下，从浏览器访问时在域名<strong><a href="http://www.tomcat.com" target="_blank" rel="noopener">www.tomcat.com</a></strong>后面添加<strong>/myapp</strong>，可以跳转访问到在<strong>docBase</strong>指定目录的<strong>index.jsp</strong>文件。（直接访问域名其实是跳转<strong>webapps</strong>中的<strong>index.xml</strong>文件）</em></p>
+<p><em>##</em> <em>相当于指定可访问资源的<strong>URI</strong>，类似于<strong>Nginx</strong>中的<strong>location/xxx</strong>的功能</em></p>
+<p>&lt;Valve className=”org.apache.catalina.valves.AccessLogValve”</p>
+<p>directory=”logs”</p>
+<p>prefix=”localhost_access_log” suffix=”.txt”</p>
+<p>pattern=”%h %l %u %t &quot;%r&quot; %s %b” /&gt;</p>
+
+
+<p>## URL和URI的区别：<a href="https://blog.csdn.net/qq_32595453/article/details/80563142" target="_blank" rel="noopener">https://blog.csdn.net/qq_32595453/article/details/80563142</a></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image065.png" alt="img"></p>
+<p>参考文章：</p>
+<p><a href="https://www.cnblogs.com/wbxk/p/9623619.html" target="_blank" rel="noopener">https://www.cnblogs.com/wbxk/p/9623619.html</a>  侧重实战模拟详解</p>
+<p><a href="https://blog.csdn.net/qq_35713827/article/details/82585539" target="_blank" rel="noopener">https://blog.csdn.net/qq_35713827/article/details/82585539</a> 侧重源码架构讲解</p>
+<p><a href="https://www.cnblogs.com/aaron911/p/11006493.html" target="_blank" rel="noopener">https://www.cnblogs.com/aaron911/p/11006493.html</a> 侧重元素拆分讲解</p>
+<h3 id="4-2-tomcat-user-xml配置文件"><a href="#4-2-tomcat-user-xml配置文件" class="headerlink" title="4-2. tomcat-user.xml配置文件"></a>4-2. tomcat-user.xml配置文件</h3><p>该配置文件中，主要配置的是Tomcat的用户、角色等信息，用来控制Tomcat中manager，host-manager的访问权限等问题，在后面的Tomcat配置管理中进行详细解读</p>
+<h3 id="4-3-创建虚拟目录"><a href="#4-3-创建虚拟目录" class="headerlink" title="4-3. 创建虚拟目录"></a>4-3. 创建虚拟目录</h3><p>l  第一种方法：冷加载</p>
+<p>更改server.xml文件中虚拟主机下的Context配置（不推荐，需要重启服务）</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image067.jpg" alt="img"></p>
+<p>重启服务器加载server.xml文件，访问测试：</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image068.png" alt="img"></p>
+<p>l  方法二：热加载</p>
+<p>在Tomcat的conf目录下自动生成的Catalina下的location目录下创建xxx.xml</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image069.png" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image070.png" alt="img"></p>
+<h3 id="4-4-创建虚拟主机"><a href="#4-4-创建虚拟主机" class="headerlink" title="4-4. 创建虚拟主机"></a>4-4. 创建虚拟主机</h3><p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image071.png" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image073.jpg" alt="img"></p>
+<p>l  指定默认的Host主机</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image075.jpg" alt="img"></p>
+<p>l  指定虚拟主机的默认应用</p>
+<p>默认应用放在ROOT中，如果想让我们自己的web应用默认被方位，只需将web目录名改为ROOT即可</p>
+<h2 id="第五节：Web应用配置"><a href="#第五节：Web应用配置" class="headerlink" title="第五节：Web应用配置"></a>第五节：Web应用配置</h2><p>web.xml 是web应用的描述文件， 它支持的元素及属性来自于Servlet 规范定义 。 在Tomcat 中， Web 应用的描述信息包括 tomcat/conf/web.xml 中默认配置 以及 Web应用 WEB-INF/web.xml 下的定制配置。</p>
+<h3 id="5-1-ServletContext初始化参数"><a href="#5-1-ServletContext初始化参数" class="headerlink" title="5-1. ServletContext初始化参数"></a>5-1. ServletContext初始化参数</h3><p> 我们可以通过 添加ServletContext 初始化参数，它配置了一个键值对，这样我们可以在应用程序中使用 javax.servlet.ServletContext.getInitParameter()方法获取参数。</p>
+<p>l  配置格式</p>
+<p>&lt;context‐param&gt;</p>
+<p>&lt;param‐name&gt;contextConfigLocation&lt;/param‐name&gt;</p>
+<p>&lt;param‐value&gt;classpath:applicationContext‐*.xml&lt;/param‐value&gt;</p>
+<p><description>Spring Config File Location</description></p>
+<p>&lt;/context‐param&gt;</p>
+<p>l  配置示例</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image077.jpg" alt="img"></p>
+ <aontext-param>
+
+<p><param-name>project_param_01</param-name></p>
+<p><param-value>itcast</param-value></p>
+
+
+<p>l 在servlet实例中引用</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image079.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image081.jpg" alt="img"></p>
+<p>## context-param使用关注点：1、如果配置；2、如果引用</p>
+<p>参考文章：</p>
+<p><a href="https://www.cnblogs.com/Jeely/p/10762168.html" target="_blank" rel="noopener">https://www.cnblogs.com/Jeely/p/10762168.html</a></p>
+<p><a href="https://blog.csdn.net/yuan1755601154/article/details/79938801" target="_blank" rel="noopener">https://blog.csdn.net/yuan1755601154/article/details/79938801</a></p>
+<p><a href="https://www.cnblogs.com/jiaguozhilian/p/5819032.html" target="_blank" rel="noopener">https://www.cnblogs.com/jiaguozhilian/p/5819032.html</a></p>
+<h3 id="5-2-session会话配置"><a href="#5-2-session会话配置" class="headerlink" title="5-2. session会话配置"></a>5-2. session会话配置</h3><p> 用于配置Web应用会话，包括 超时时间、Cookie配置以及会话追踪模式。它将覆盖server.xml 和 context.xml 中的配置。</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image082.png" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image084.jpg" alt="img"></p>
+<p>l  配置解析</p>
+<p>Ø  session‐timeout ： 会话超时时间，单位 分钟</p>
+<p>Ø  cookie‐config： 用于配置会话追踪Cookie</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  name：Cookie的名称</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  domain：Cookie的域名</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  path：Cookie的路径</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  comment：注释</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  http‐only：cookie只能通过HTTP方式进行访问，JS无法读取或修改，此项可以增加网站访问的安全性。</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  secure：此cookie只能通过HTTPS连接传递到服务器，而HTTP 连接则不会传递该信息。注意是从浏览器传递到服务器，服务器端的Cookie对象不受此项影响。</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  max‐age：以秒为单位表示cookie的生存期，默认为‐1表示是会话Cookie，浏览器关闭时就会消失。</p>
+<p>Ø  tracking‐mode ：用于配置会话追踪模式，Servlet3.0版本中支持的追踪模式：COOKIE、URL、SSL</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  COOKIE : 通过HTTP Cookie 追踪会话是最常用的会话追踪机制， 而且Servlet规范也要求所有的Servlet规范都需要支持Cookie追踪。</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  URL : URL重写是最基本的会话追踪机制。当客户端不支持Cookie时，可以采用URL重写的方式。当采用URL追踪模式时，请求路径需要包含会话标识信息，Servlet容器会根据路径中的会话标识设置请求的会话信息。如：http：//<a href="http://www.myserver.com/user/index.html;jessionid=1234567890。" target="_blank" rel="noopener">www.myserver.com/user/index.html;jessionid=1234567890。</a></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  SSL : 对于SSL请求， 通过SSL会话标识确定请求会话标识。</p>
+<p>l  示例演示</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image085.png" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image087.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image089.jpg" alt="img"></p>
+<p>参考文章：</p>
+<p><a href="https://blog.csdn.net/qq_36838191/article/details/91382562" target="_blank" rel="noopener">https://blog.csdn.net/qq_36838191/article/details/91382562</a></p>
+<p><a href="https://www.cnblogs.com/jpfss/p/9486851.html" target="_blank" rel="noopener">https://www.cnblogs.com/jpfss/p/9486851.html</a></p>
+<h3 id="5-3-Servlet配置"><a href="#5-3-Servlet配置" class="headerlink" title="5-3. Servlet配置"></a>5-3. Servlet配置</h3><p> Servlet 的配置主要是两部分， servlet 和 servlet-mapping（映射）</p>
+<servlet>
+
+<p>&lt;servlet‐name&gt;myServlet&lt;/servlet‐name&gt;</p>
+<p>&lt;servlet‐class&gt;cn.itcast.web.MyServlet&lt;/servlet‐class&gt;</p>
+<p>&lt;init‐param&gt;</p>
+<p>&lt;param‐name&gt;fileName&lt;/param‐name&gt;</p>
+<p>&lt;param‐value&gt;init.conf&lt;/param‐value&gt;</p>
+<p>&lt;/init‐param&gt;</p>
+<p>&lt;load‐on‐startup&gt;1&lt;/load‐on‐startup&gt;</p>
+<p><enabled>true</enabled></p>
+</servlet>
+
+
+
+<p>&lt;servlet‐mapping&gt;</p>
+<p>&lt;servlet‐name&gt;myServlet&lt;/servlet‐name&gt;</p>
+<p>&lt;url‐pattern&gt;*.do&lt;/url‐pattern&gt;</p>
+<p>&lt;url‐pattern&gt;/myservet/*&lt;/url‐pattern&gt;</p>
+<p>&lt;/servlet‐mapping&gt;</p>
+<p>l  配置说明</p>
+<p>Ø  servlet‐name : 指定servlet的名称， 该属性在web.xml中唯一。</p>
+<p>Ø  servlet‐class : 用于指定servlet类名</p>
+<p>Ø  init‐param： 用于指定servlet的初始化参数， 在应用中可以通过HttpServlet.getInitParameter 获取。</p>
+<p>Ø  load‐on‐startup： 用于控制在Web应用启动时，Servlet的加载顺序。 值小于0，web应用启动时，不加载该servlet, 第一次访问时加载。</p>
+<p>Ø  enabled： true ， false 。 若为false ，表示Servlet不处理任何请求。</p>
+<p>Ø  url‐pattern： 用于指定URL表达式，一个 servlet‐mapping可以同时配置多个 urlpattern</p>
+<p>l  示例说明</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image090.png" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image092.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image094.jpg" alt="img"></p>
+<p><strong>##</strong> <strong>没有配置**</strong>load-no-startup<strong><strong>时，在一次访问时才会加载</strong></strong>Servlet**</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image096.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image098.jpg" alt="img"></p>
+<p>l  Servlet中文件上传配置</p>
+<servlet>
+
+<p>&lt;servlet‐name&gt;uploadServlet&lt;/servlet‐name&gt;</p>
+<p>&lt;servlet‐class&gt;cn.itcast.web.UploadServlet&lt;/servlet‐class&gt;</p>
+<p>&lt;multipart‐config&gt;</p>
+<p><location>C://path</location></p>
+<p>&lt;max‐file‐size&gt;10485760&lt;/max‐file‐size&gt;</p>
+<p>&lt;max‐request‐size&gt;10485760&lt;/max‐request‐size&gt;</p>
+<p>&lt;file‐size‐threshold&gt;0&lt;/file‐size‐threshold&gt;</p>
+<p>&lt;/multipart‐config&gt;</p>
+</servlet>
+
+<p>l  配置说明</p>
+<p>Ø  location：存放生成的文件地址。</p>
+<p>Ø  max‐file‐size：允许上传的文件最大值。 默认值为‐1， 表示没有限制。</p>
+<p>Ø  max‐request‐size：针对该 multi/form‐data 请求的最大数量，默认值为‐1， 表示无限制。</p>
+<p>Ø  file‐size‐threshold：当数量量大于该值时， 内容会被写入文件。</p>
+<p>参考文章：</p>
+<p><a href="https://www.cnblogs.com/musecho/p/11201752.html" target="_blank" rel="noopener">https://www.cnblogs.com/musecho/p/11201752.html</a> 推荐</p>
+<p><a href="https://www.jianshu.com/p/4ad385422a11" target="_blank" rel="noopener">https://www.jianshu.com/p/4ad385422a11</a></p>
+<p><a href="https://www.cnblogs.com/echola/p/9675282.html" target="_blank" rel="noopener">https://www.cnblogs.com/echola/p/9675282.html</a></p>
+<h3 id="5-4-Listener配置"><a href="#5-4-Listener配置" class="headerlink" title="5-4. Listener配置"></a>5-4. Listener配置</h3><p> Listener用于监听servlet中的事件，例如context、request、session对象的创建、修改、删除，并触发响应事件。</p>
+<p>Listener是观察者模式的实现，在servlet中主要用于对context、request、session对象的生命周期进行监控。在servlet2.5规范中共定义了8钟Listener。</p>
+<p>在启动时，ServletContextListener 的执行顺序与web.xml 中的配置顺序一致， 停止时执行顺序相反。</p>
+<listener>
+
+<listener-class>
+
+<p>org.springframework.web.context.ContextLoaderListener</p>
+</listener-class>
+
+</listener>
+
+<p>参考文章：</p>
+<p><a href="http://www.pianshen.com/article/9824108979/" target="_blank" rel="noopener">http://www.pianshen.com/article/9824108979/</a></p>
+<p><a href="https://blog.csdn.net/xiaocai9999/article/details/80646345" target="_blank" rel="noopener">https://blog.csdn.net/xiaocai9999/article/details/80646345</a></p>
+<h3 id="5-5-Filter配置"><a href="#5-5-Filter配置" class="headerlink" title="5-5. Filter配置"></a>5-5. Filter配置</h3><p> filter 用于配置web应用过滤器， 用来过滤资源请求及响应。 经常用于认证、日志、加密、数据转换等操作， 配置如下：</p>
+<filter>
+
+<p>&lt;filter‐name&gt;myFilter&lt;/filter‐name&gt;</p>
+<p>&lt;filter‐class&gt;cn.itcast.web.MyFilter&lt;/filter‐class&gt;</p>
+<p>&lt;async‐supported&gt;true&lt;/async‐supported&gt;</p>
+<p>&lt;init‐param&gt;</p>
+<p>&lt;param‐name&gt;language&lt;/param‐name&gt;</p>
+<p>&lt;param‐value&gt;CN&lt;/param‐value&gt;</p>
+<p>&lt;/init‐param&gt;</p>
+</filter>
+
+
+
+<p>&lt;filter‐mapping&gt;</p>
+<p>&lt;filter‐name&gt;myFilter&lt;/filter‐name&gt;</p>
+<p>&lt;url‐pattern&gt;/*&lt;/url‐pattern&gt;</p>
+<p>&lt;/filter‐mapping&gt;</p>
+<p>l  配置说明</p>
+<p>Ø  filter‐name： 用于指定过滤器名称，在web.xml中，过滤器名称必须唯一。</p>
+<p>Ø  filter‐class ： 过滤器的全限定类名， 该类必须实现Filter接口。</p>
+<p>Ø  async‐supported： 该过滤器是否支持异步</p>
+<p>Ø  init‐param ：用于配置Filter的初始化参数， 可以配置多个， 可以通过FilterConfig.getInitParameter获取</p>
+<p>Ø  url‐pattern： 指定该过滤器需要拦截的URL。</p>
+<p>参考文章：</p>
+<p><a href="https://www.cnblogs.com/jian0110/p/10512188.html" target="_blank" rel="noopener">https://www.cnblogs.com/jian0110/p/10512188.html</a></p>
+<p><a href="https://www.cnblogs.com/MrliBlog/p/11000140.html" target="_blank" rel="noopener">https://www.cnblogs.com/MrliBlog/p/11000140.html</a></p>
+<h3 id="5-6-欢迎页和错误页"><a href="#5-6-欢迎页和错误页" class="headerlink" title="5-6. 欢迎页和错误页"></a>5-6. 欢迎页和错误页</h3><p>l  欢迎页配置</p>
+<p>welcome-file-list 用于指定web应用的欢迎文件列表。</p>
+<p>&lt;welcome‐file‐list&gt;</p>
+<p>&lt;welcome‐file&gt;index.html&lt;/welcome‐file&gt;</p>
+<p>&lt;welcome‐file&gt;index.htm&lt;/welcome‐file&gt;</p>
+<p>&lt;welcome‐file&gt;index.jsp&lt;/welcome‐file&gt;</p>
+<p>&lt;/welcome‐file‐list&gt;</p>
+<p>l  错误页配置</p>
+<p> error-page 用于配置Web应用访问异常时定向到的页面，支持HTTP响应码和异常类两种形式。</p>
+<p>&lt;error‐page&gt;</p>
+<p>&lt;error‐code&gt;404&lt;/error‐code&gt;</p>
+<p><location>/404.html</location></p>
+<p>&lt;/error‐page&gt;</p>
+<p>&lt;error‐page&gt;</p>
+<p>&lt;error‐code&gt;500&lt;/error‐code&gt;</p>
+<p><location>/500.html</location></p>
+<p>&lt;/error‐page&gt;</p>
+<p>&lt;error‐page&gt;</p>
+<p>&lt;exception‐type&gt;java.lang.Exception&lt;/exception‐type&gt;</p>
+<p><location>/error.jsp</location></p>
+<p>&lt;/error‐page&gt;</p>
+<p>l  示例说明</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image100.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image102.jpg" alt="img"></p>
+<p>## 直接将报错返回给用户有两个缺点：1、用户体验不好。2、用户将直接看到错误码，对服务器不安全</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image103.png" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image104.png" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image105.png" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image106.png" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image107.png" alt="img"></p>
+<p>参考文章：</p>
+<p><a href="https://www.cnblogs.com/qlqwjy/p/9070000.html" target="_blank" rel="noopener">https://www.cnblogs.com/qlqwjy/p/9070000.html</a></p>
+<p><a href="https://blog.csdn.net/m0_37840243/article/details/95972181" target="_blank" rel="noopener">https://blog.csdn.net/m0_37840243/article/details/95972181</a></p>
+<p><a href="https://www.iteye.com/blog/12180062-2262731" target="_blank" rel="noopener">https://www.iteye.com/blog/12180062-2262731</a></p>
+<h3 id="5-7-手工实现一个简单静态web应用"><a href="#5-7-手工实现一个简单静态web应用" class="headerlink" title="5-7. 手工实现一个简单静态web应用"></a>5-7. 手工实现一个简单静态web应用</h3><p>l  在webapps中新建web应用目录myweb</p>
+<p>Ø  新建hello.html页面，内容hello word</p>
+<p>Ø  启动tomcat，通过localhost:8080/myweb/hello.html进行访问</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image108.png" alt="img"></p>
+<p>l  手工创建欢迎页面</p>
+<p>Ø  在myweb目录中新建WEB-INF目录，并创建web.xml文件</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image110.jpg" alt="img"></p>
+<p>l  一个简单web应用目录架构</p>
+<p>Ø  WEB-INF</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  classes（存放Servlet功能文件）</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  lib（存放依赖jer包文件）</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  web.xml文件</p>
+<p>Ø  其他静态文件及web页面</p>
+<p>l  使用命令行生成war包</p>
+<p>打war包命令：jar –cvf d:\123\myweb.war .</p>
+<p>Ø  cvf是命令参数，表示生成一个文档、显示生成过程、指定生成的文件名</p>
+<p>Ø  d:\abc\myweb.war为生成的文档的存放路径及文件名</p>
+<p>Ø  最后一个点号表示要将当前目录中所有内容进行打包，当然，也可以将war包直接打包到当前目录</p>
+<h2 id="第六节：Tomcat管理配置"><a href="#第六节：Tomcat管理配置" class="headerlink" title="第六节：Tomcat管理配置"></a>第六节：Tomcat管理配置</h2><p> 从早期的Tomcat版本开始，就提供了Web版的管理控制台，他们是两个独立的Web应用，位于webapps目录下。Tomcat 提供的管理应用有用于管理的Host的host-manager和用于管理Web应用的manager。</p>
+<h3 id="6-1-Host-Manager"><a href="#6-1-Host-Manager" class="headerlink" title="6-1. Host-Manager"></a>6-1. Host-Manager</h3><p> Tomcat启动之后，可以通过 <a href="http://localhost:8080/host-manager/html" target="_blank" rel="noopener">http://localhost:8080/host-manager/html</a> 访问该Web应用。 host-manager 默认添加了访问权限控制，当打开网址时，需要输入用户名和密码（conf/tomcat-users.xml中配置） 。所以要想访问该页面，需要在conf/tomcatusers.xml 中配置，并分配对应的角色：</p>
+<p>1） admin-gui：用于控制页面访问权限</p>
+<p>2） admin-script：用于控制以简单文本的形式进行访问</p>
+<role rolename="admin‐gui">
+
+<role rolename="admin‐script">
+
+<user username="itcast" password="itcast" roles="admin‐script,admingui">
+
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image112.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image114.jpg" alt="img"></p>
+<h3 id="6-2-Manager-APP"><a href="#6-2-Manager-APP" class="headerlink" title="6-2. Manager APP"></a>6-2. Manager APP</h3><p> manager的访问地址为 <a href="http://localhost:8080/manager，" target="_blank" rel="noopener">http://localhost:8080/manager，</a> 同样， manager也添加了页</p>
+<p>面访问控制，因此我们需要为登录用户分配角色为：</p>
+<role rolename="manager‐gui">
+
+<role rolename="manager‐script">
+
+<user username="itcast" password="itcast" roles="admin‐script,admingui,manager‐gui,manager‐script">
+
+<p>## 关于Host和App的区别：主机主要针对的是域名或端口的相关配置，类似于Nginx的Server模块；APP主要针对的是访问到该主机后提供的可访问资源（也称为应用），类似于Nginx中的location模块中的/xxxx（其实就是个URI）（Host=默认的location/）</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image116.jpg" alt="img"></p>
+<p>参考文章：</p>
+<p><a href="https://my.oschina.net/u/2338224/blog/1793153" target="_blank" rel="noopener">https://my.oschina.net/u/2338224/blog/1793153</a></p>
+<p><a href="https://blog.csdn.net/feinifi/article/details/80704564" target="_blank" rel="noopener">https://blog.csdn.net/feinifi/article/details/80704564</a></p>
+<p><a href="https://blog.csdn.net/qq_34418937/article/details/93935793" target="_blank" rel="noopener">https://blog.csdn.net/qq_34418937/article/details/93935793</a></p>
+<h2 id="第七节：JVM"><a href="#第七节：JVM" class="headerlink" title="第七节：JVM"></a>第七节：JVM</h2><p> 最常见的JVM配置当属内存分配，因为在绝大多数情况下，JVM默认分配的内存可能不能够满足我们的需求，特别是在生产环境，此时需要手动修改Tomcat启动时的内存参数分配。</p>
+<h3 id="7-1-JVM内存模型"><a href="#7-1-JVM内存模型" class="headerlink" title="7-1.  JVM内存模型"></a>7-1.  JVM内存模型</h3><p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image118.jpg" alt="img"></p>
+<p>## 主要针对JVM内存模型中的堆空间进行分配，因为其内存占用比也是最大的</p>
+<h3 id="7-2-JVM配置选项"><a href="#7-2-JVM配置选项" class="headerlink" title="7-2. JVM配置选项"></a>7-2. JVM配置选项</h3><p>l  windows 平台(catalina.bat)：</p>
+<p>set JAVA_OPTS=‐server ‐Xms2048m ‐Xmx2048m ‐XX:MetaspaceSize=256m          </p>
+<p>‐XX:MaxMetaspaceSize=256m ‐XX:SurvivorRatio=8</p>
+<p>l  linux 平台(catalina.sh)：</p>
+<p>JAVA_OPTS=”‐server ‐Xms1024m ‐Xmx2048m ‐XX:MetaspaceSize=256m</p>
+<p>‐XX:MaxMetaspaceSize=512m ‐XX:SurvivorRatio=8”</p>
+<p>l  参数说明 ：</p>
+<table>
+<thead>
+<tr>
+<th>序号</th>
+<th>参数</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>-Xms</td>
+<td>堆内存的初始大小</td>
+</tr>
+<tr>
+<td>2</td>
+<td>-Xmx</td>
+<td>堆内存的最大大小</td>
+</tr>
+<tr>
+<td>3</td>
+<td>-Xmn</td>
+<td>新生代的内存大小，官方建议是整个堆得3/8</td>
+</tr>
+<tr>
+<td>4</td>
+<td>-XX:MetaspaceSize</td>
+<td>元空间内存初始大小， 在JDK1.8版本之前配置为 -XX:PermSize（永久代）</td>
+</tr>
+<tr>
+<td>5</td>
+<td>-XX:MaxMetspaceSize</td>
+<td>元空间内存最大大小， 在JDK1.8版本之前配置为 -XX:MaxPermSize（永久代）</td>
+</tr>
+<tr>
+<td>6</td>
+<td>-XX:InitiaLCodeCacheSize  -XX:ReservedCodeCacheSize</td>
+<td>代码缓存区大小</td>
+</tr>
+<tr>
+<td>7</td>
+<td>-XX:NewRatio</td>
+<td>设置新生代和老年代的相对大小比例。这种方式的优点是新生代大小会随着整个堆大小动态扩展。如 -XX:NewRatio=3 指定老年代 /新生代为 3/1。  老年代占堆大小的 3/4，新生代占 1/4</td>
+</tr>
+<tr>
+<td>8</td>
+<td>-XX:SurvlvorRatio</td>
+<td>指定伊甸园区 (Eden) 与幸存区大小比例。如-XX:SurvivorRatio=10 表示伊甸园区 (Eden)是幸存区 To 大小的 10 倍 (也是幸存区 From的10 倍)。  所以， 伊甸园区 (Eden) 占新生代大小的 10/12， 幸存区 From 和幸存区 To 每个占新生代的 1/12 。 注意， 两个幸存区永远是一样大的</td>
+</tr>
+</tbody></table>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image120.jpg" alt="img"></p>
+<h2 id="第八节：Tomcat集群"><a href="#第八节：Tomcat集群" class="headerlink" title="第八节：Tomcat集群"></a>第八节：Tomcat集群</h2><h3 id="8-1-Tomcat集群简介"><a href="#8-1-Tomcat集群简介" class="headerlink" title="8-1. Tomcat集群简介"></a>8-1. Tomcat集群简介</h3><p> 由于单台Tomcat的承载能力是有限的，当我们的业务系统用户量比较大，请求压力比较大时，单台Tomcat是扛不住的，这个时候，就需要搭建Tomcat的集群，而目前比较流程的做法就是通过Nginx来实现Tomcat集群的负载均衡。</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image122.jpg" alt="img"></p>
+<h3 id="8-2-Tomcat集群环境准备"><a href="#8-2-Tomcat集群环境准备" class="headerlink" title="8-2. Tomcat集群环境准备"></a>8-2. Tomcat集群环境准备</h3><p>l  准备两台Tomcat并修改端口</p>
+<p>在服务器上, 安装两台tomcat, 然后分别改Tomcat服务器的端口号 :</p>
+<p>8005 ‐‐‐‐‐‐‐‐‐&gt; 8015 ‐‐‐‐‐‐‐‐‐&gt; 8025</p>
+<p>8080 ‐‐‐‐‐‐‐‐‐&gt; 8888 ‐‐‐‐‐‐‐‐‐&gt; 9999</p>
+<p>8009 ‐‐‐‐‐‐‐‐‐&gt; 8019 ‐‐‐‐‐‐‐‐‐&gt; 8029</p>
+<p>l  准备一台Nginx并修改配置</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image124.jpg" alt="img"></p>
+<p>l  负载均衡策略</p>
+<p>Ø  轮询</p>
+<p>最基本的配置方法，它是upstream模块默认的负载均衡默认策略。每个请求会按时间顺</p>
+<p>序逐一分配到不同的后端服务器</p>
+<p>upstream serverpool{</p>
+<p>server localhost:8888;</p>
+<p>server localhost:9999;</p>
+<p>}</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  参数说明：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>fail_timeout</td>
+<td>与max_fails结合使用</td>
+</tr>
+<tr>
+<td>max_fails</td>
+<td>设置在fail_timeout参数设置的时间内最大失败次数，如果在这个时间内，所有针对该服务器的请求都失败了，那么认为该服务器会被认为是停机了</td>
+</tr>
+<tr>
+<td>fail_time</td>
+<td>服务器会被认为停机的时间长度,默认为10s</td>
+</tr>
+<tr>
+<td>backup</td>
+<td>标记该服务器为备用服务器。当主服务器停止时，请求会被发送到它这里</td>
+</tr>
+<tr>
+<td>down</td>
+<td>标记服务器永久停机了</td>
+</tr>
+</tbody></table>
+<p>Ø  weight权重</p>
+<p>权重方式，在轮询策略的基础上指定轮询的几率</p>
+<p>upstream serverpool{</p>
+<p>server localhost:8888 weight=3;</p>
+<p>server localhost:9999 weight=1;</p>
+<p>}</p>
+<p>  weight参数用于指定轮询几率，weight的默认值为1；weight的数值与访问比率成正比，比如8888服务器上的服务被访问的几率为9999服务器的三倍</p>
+<p>Ø  ip_hash</p>
+<p>指定负载均衡器按照基于客户端IP的分配方式，这个方法确保了相同的客户端的请求一直发送到相同的服务器以保证session会话。这样每个访客都固定访问一个后端服务器，可以解决session不能跨服务器的问题。</p>
+<p>upstream serverpool{</p>
+<p>ip_hash;</p>
+<p>server 192.168.192.133:8080;</p>
+<p>server 192.168.192.137:8080;</p>
+<p>}</p>
+<h3 id="8-3-Session（记录客户状态的机制）共享方案"><a href="#8-3-Session（记录客户状态的机制）共享方案" class="headerlink" title="8-3. Session（记录客户状态的机制）共享方案"></a>8-3. Session（记录客户状态的机制）共享方案</h3><p> 在Tomcat集群中，如果应用需要用户进行登录，那么这个时候，用于tomcat做了负载均衡，则用户登录并访问应用系统时，就会出现问题</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image126.jpg" alt="img"></p>
+<p>## 用户第一次访问并登陆分配到后端tomcat1上，保存Session（包括客户端登录状态），而用户第二次访问时则分配到了后端tomcat2上面，并没有客户端登录信息的记录，则会无法访问</p>
+<p>l  第一种方法：ip_hash</p>
+<p>   一个用户（根据IP）发起的请求（不论多少次），只会发送到其中一台上进行操作，另一个用户发起的请求也同样只会分配到一台上进行操作</p>
+<p>l  第二种方法：Session复制</p>
+<p>在servlet_demo01 工程中 , 制作session.jsp页面，分别将工程存放在两台 tomcat 的webapps/ 目录下：</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image128.jpg" alt="img"></p>
+<p>## 打war包操作（有待学习）</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image130.jpg" alt="img"></p>
+<p>&lt;%@ page contentType=”text/html;charset=UTF‐8” language=”java” %&gt;</p>
+<html>
+
+<head>
+
+<title>Title</title>
+
+</head>
+
+<body>
+
+<p>TOMCAT ‐ 9999 ：</p>
+<br>
+
+<p>sessionID : &lt;%= session.getId()%&gt;</p>
+<br>
+
+<p>&lt;%</p>
+<p>Object loginUser = session.getAttribute(“loginUser”);</p>
+<p>if(loginUser != null &amp;&amp; loginUser.toString().length()&gt;0){</p>
+<p>out.println(“session 有值, loginUser = “ + loginUser);</p>
+<p>}else{</p>
+<p>session.setAttribute(“loginUser”,”ITCAST”);</p>
+<p>out.println(“session 没有值”);</p>
+<p>}</p>
+<p>%&gt;</p>
+</body>
+
+</html>
+
+<p>通过nginx访问 ， <a href="http://localhost:99/demo01/session.jsp" target="_blank" rel="noopener">http://localhost:99/demo01/session.jsp</a> ，访问到的两台Tomcat出现的sessionID是不一样的：</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image131.png" alt="img"></p>
+<p>上述现象，则说明两台Tomcat的Session各是各的，并没有进行同步，这在集群环境下是存在问题的</p>
+<p>Ø  Session同步的配置如下</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  在Tomcat的conf/server.xml 配置如下:</p>
+<Cluster classname="org.apache.catalina.ha.tcp.SimpleTcpCluster">
+
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  在Tomcat部署的应用程序 servlet_demo01 的web.xml 中加入如下配置 ：</p>
+<distributable>
+
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  配置完毕之后， 再次重启两个 Tomcat服务</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image133.jpg" alt="img"></p>
+<p>## 此种方法只能适用于小心集群，当Tomcat集群节点太多时，Session复制将会占用服务器大量资源及带宽</p>
+<p>参考资料：</p>
+<p><a href="https://www.cnblogs.com/wangpei/p/4884840.html" target="_blank" rel="noopener">https://www.cnblogs.com/wangpei/p/4884840.html</a></p>
+<p><a href="https://www.iteye.com/blog/uule-891532" target="_blank" rel="noopener">https://www.iteye.com/blog/uule-891532</a></p>
+<p><a href="https://blog.csdn.net/weixin_42217767/article/details/92760353" target="_blank" rel="noopener">https://blog.csdn.net/weixin_42217767/article/details/92760353</a></p>
+<p>l  第三种方法：SSO-单点登录（重点推荐）（待学习）</p>
+<p>  单点登录（Single Sign On），简称为 SSO，是目前比较流行的企业业务整合的解决方案之一。SSO的定义是在多个应用系统中，用户只需要登录一次就可以访问所有相互信任的应用系统，也是用来解决集群环境Session共享的方案之一</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image135.jpg" alt="img"></p>
+<p>参考链接：</p>
+<p><a href="https://blog.csdn.net/fighting_sxw/article/details/85162920" target="_blank" rel="noopener">https://blog.csdn.net/fighting_sxw/article/details/85162920</a></p>
+<p><a href="https://blog.csdn.net/schezhiyong/article/details/51131441" target="_blank" rel="noopener">https://blog.csdn.net/schezhiyong/article/details/51131441</a></p>
+<p><a href="https://blog.csdn.net/x1032019725/article/details/82345558" target="_blank" rel="noopener">https://blog.csdn.net/x1032019725/article/details/82345558</a></p>
+<h2 id="第九节：Tomcat安全"><a href="#第九节：Tomcat安全" class="headerlink" title="第九节：Tomcat安全"></a>第九节：Tomcat安全</h2><p>l <strong>配置安全</strong></p>
+<p>Ø  删除webapps目录下的所有文件，禁用tomcat管理界面；</p>
+<p>Ø  注释或删除tomcat-users.xml文件内的所有用户权限；</p>
+<p>Ø  更改关闭tomcat指令或禁用；</p>
+<p>tomcat的server.xml中定义了可以直接关闭 Tomcat 实例的管理端口（默认8005）。可以通过 telnet 连接上该端口之后，输入 SHUTDOWN （此为默认关闭指令）即可关闭Tomcat 实例（注意，此时虽然实例关闭了，但是进程还是存在的）。由于默认关闭Tomcat 的端口和指令都很简单。默认端口为8005，指令为SHUTDOWN 。</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  第一种方法：</p>
+<p>更改端口号和指令：</p>
+<Server port="8456" shutdown="itcast_shut">
+
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  第二种方法：</p>
+<p>禁用8005端口：</p>
+<Server port="‐1" shutdown="SHUTDOWN">
+
+<p>Ø  定义错误页面</p>
+<p>在webapps/ROOT目录下定义错误页面 404.html，500.html；然后在tomcat/conf/web.xml中进行配置，配置错误页面：</p>
+<p>&lt;error‐page&gt;</p>
+<p>&lt;error‐code&gt;404&lt;/error‐code&gt;</p>
+<p><location>/404.html</location></p>
+<p>&lt;/error‐page&gt;</p>
+<p>&lt;error‐page&gt;</p>
+<p>&lt;error‐code&gt;500&lt;/error‐code&gt;</p>
+<p><location>/500.html</location></p>
+<p>&lt;/error‐page&gt;</p>
+<p>这样配置之后，用户在访问资源时出现404,500这样的异常，就能看到我们自定义的错误页面，而不会看到异常的堆栈信息，提高了用户体验，也保障了服务的安全性。</p>
+<p>l <strong>应用安全（待学习）</strong></p>
+<p>在大部分的Web应用中，特别是一些后台应用系统，都会实现自己的安全管理模块（权限模块），用于控制应用系统的安全访问，基本包含两个部分：认证（登录/单点登录）和授权（功能权限、数据权限）两个部分。</p>
+<p>对于当前的业务系统，可以自己做一套适用于自己业务系统的权限模块，也有很多的应用系统直接使用一些功能完善的安全框架，将其集成到我们的web应用中，如：SpringSecurity、Apache Shiro等。</p>
+<p>参考文章：</p>
+<p><a href="https://www.cnblogs.com/peke/p/8013160.html" target="_blank" rel="noopener">https://www.cnblogs.com/peke/p/8013160.html</a></p>
+<p><a href="https://blog.csdn.net/lee_yanyi/article/details/88826741" target="_blank" rel="noopener">https://blog.csdn.net/lee_yanyi/article/details/88826741</a></p>
+<p><a href="http://www.ttlsa.com/tomcat/tomcat-security-hardening-configuration/" target="_blank" rel="noopener">http://www.ttlsa.com/tomcat/tomcat-security-hardening-configuration/</a></p>
+<p>l <strong>传输安全</strong></p>
+<p> HTTPS的全称是超文本传输安全协议（Hypertext Transfer Protocol Secure），是一种网络安全传输协议。在HTTP的基础上加入SSL/TLS来进行数据加密，保护交换数据不被泄露、窃取。</p>
+<p> SSL 和 TLS 是用于网络通信安全的加密协议，它允许客户端和服务器之间通过安全链接通信。SSL 协议的3个特性：</p>
+<p>Ø  保密：通过SSL链接传输的数据时加密的。</p>
+<p>Ø  鉴别：通信双方的身份鉴别，通常是可选的，单至少有一方需要验证。</p>
+<p>Ø  完整性：传输数据的完整性检查。</p>
+<p>从性能角度考虑，加解密是一项计算昂贵的处理，因为尽量不要将整个Web应用采用SSL链接， 实际部署过程中， 选择有必要进行安全加密的页面（存在敏感信息传输的页面）采用SSL通信。</p>
+<p>l  HTTPS和HTTP的区别主要为以下四点：</p>
+<p>Ø  HTTPS协议需要到证书颁发机构CA申请SSL证书, 然后与域名进行绑定，HTTP不用申请证书；</p>
+<p>Ø  HTTP是超文本传输协议，属于应用层信息传输，HTTPS 则是具有SSL加密传安全性传输协议，对数据的传输进行加密，相当于HTTP的升级版；</p>
+<p>Ø  HTTP和HTTPS使用的是完全不同的连接方式，用的端口也不一样，前者是8080，后者是8443。</p>
+<p>Ø  HTTP的连接很简单，是无状态的；HTTPS协议是由SSL+HTTP协议构建的可进行加密传输、身份认证的网络协议，比HTTP协议安全。</p>
+<p>l  HTTP协议优势：</p>
+<p>Ø  提高网站排名，有利于SEO。谷歌已经公开声明两个网站在搜索结果方面相同，如果一个网站启用了SSL，它可能会获得略高于没有SSL网站的等级，而且百度也表明对安装了SSL的网站表示友好。因此，网站上的内容中启用SSL都有明显的SEO优势。</p>
+<p>Ø  隐私信息加密，防止流量劫持。特别是涉及到隐私信息的网站，互联网大型的数据泄露的事件频发发生，网站进行信息加密势在必行。</p>
+<p>Ø  浏览器受信任。 自从各大主流浏览器大力支持HTTPS协议之后，访问HTTP的网站都会提示“不安全”的警告信息。</p>
+<h2 id="第十节：Tomcat性能调优"><a href="#第十节：Tomcat性能调优" class="headerlink" title="第十节：Tomcat性能调优"></a>第十节：Tomcat性能调优</h2><h3 id="10-1-Tomcat性能测试"><a href="#10-1-Tomcat性能测试" class="headerlink" title="10-1. Tomcat性能测试"></a>10-1. Tomcat性能测试</h3><p>对于系统性能，用户最直观的感受就是系统的加载和操作时间，即用户执行某项操作的耗时。从更为专业的角度上讲，性能测试可以从以下两个指标量化。</p>
+<p>Ø  响应时间：如上所述，为执行某个操作的耗时。大多数情况下，我们需要针对同一个</p>
+<p>操作测试多次，以获取操作的平均响应时间。</p>
+<p>Ø  吞吐量：即在给定的时间内，系统支持的事务数量，计算单位为 TPS。</p>
+<p>通常情况下，我们需要借助于一些自动化工具来进行性能测试，因为手动模拟大量用户的并发访问几乎是不可行的，而且现在市面上也有很多的性能测试工具可以使用，如：ApacheBench、ApacheJMeter、WCAT、WebPolygraph、LoadRunner。</p>
+<p>我们课程上主要介绍ApacheBench</p>
+<h4 id="10-1-1-ApacheBench压力测试工具"><a href="#10-1-1-ApacheBench压力测试工具" class="headerlink" title="10-1-1. ApacheBench压力测试工具"></a>10-1-1. ApacheBench压力测试工具</h4><p> ApacheBench（ab）是一款ApacheServer基准的测试工具，用户测试Apache Server的服务能力（每秒处理请求数），它不仅可以用户Apache的测试，还可以用于测试Tomcat、Nginx、lighthttp、IIS等服务器</p>
+<p>\1.     安装</p>
+<p>yum install httpd‐tools</p>
+<p>\2.     查看版本号</p>
+<p>ab ‐V</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image137.jpg" alt="img"></p>
+<p>\3.     部署war包， 准备环境</p>
+<p>A. 在Linux系统上安装Tomcat</p>
+<p>上传 ： alt + p ‐‐‐‐‐‐‐&gt; put D:/apache‐tomcat‐8.5.42.tar.gz</p>
+<p>解压 ： tar ‐zxvf apache‐tomcat‐8.5.42.tar.gz ‐C /usr/local</p>
+<p>修改Server.xml端口号：8005 ， 8080 ， 8009</p>
+<p>B. 将资料中的war包上传至Tomcat的webapps下</p>
+<p>上传： alt + p ‐‐‐‐‐‐‐‐‐&gt; put D:/ROOT.war</p>
+<p>启动Tomcat解压</p>
+<p>C. 导入SQL脚本 ， 准备环境</p>
+<p>Mysql –u root –p 登录完成之后 将source /root/xxx.sql文件导入</p>
+<p>\4.     测试性能</p>
+<p>ab ‐n 1000 ‐c 100 ‐p data.json ‐T application/json<a href="http://localhost:9000/course/search.do?page=1&amp;pageSize=10" target="_blank" rel="noopener">http://localhost:9000/course/search.do?page=1&amp;pageSize=10</a></p>
+<p>l  参数说明</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>含义描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-n</td>
+<td>在测试会话中所执行的请求个数，默认只执行一次请求</td>
+</tr>
+<tr>
+<td>-c</td>
+<td>一次产生的请求个数，默认一次一个</td>
+</tr>
+<tr>
+<td>-p</td>
+<td>包含了需要POST的数据文件</td>
+</tr>
+<tr>
+<td>-t</td>
+<td>测试所进行的最大秒数，默认没有时间限制</td>
+</tr>
+<tr>
+<td>-T</td>
+<td>POST数据所需要使用的Content-Type头信息</td>
+</tr>
+<tr>
+<td>-v</td>
+<td>设置显示信息的详细程度</td>
+</tr>
+<tr>
+<td>-w</td>
+<td>以HTML表的格式输出结果，默认是白色背景的两列宽度的一张表</td>
+</tr>
+</tbody></table>
+<p>l  测试完成并生成测试报告</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image139.jpg" alt="img"></p>
+<p>l  结果说明</p>
+<table>
+<thead>
+<tr>
+<th><strong>指标</strong></th>
+<th><strong>含义</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Server Software</td>
+<td>服务器软件</td>
+</tr>
+<tr>
+<td>Server Hostname</td>
+<td>主机名</td>
+</tr>
+<tr>
+<td>Server Port</td>
+<td>端口号</td>
+</tr>
+<tr>
+<td>Document Path</td>
+<td>测试的页面</td>
+</tr>
+<tr>
+<td>Document Length</td>
+<td>测试的页面大小</td>
+</tr>
+<tr>
+<td>Concurrency Level</td>
+<td>并发数</td>
+</tr>
+<tr>
+<td>Time taken for tests</td>
+<td>整个测试持续的时间</td>
+</tr>
+<tr>
+<td>Complete requests</td>
+<td>完成的请求数量</td>
+</tr>
+<tr>
+<td>Failed requests</td>
+<td>失败的请求数量，这里的失败是指请求的连接服务器、发送数据、接受数据等环节发生异常，以及无响应后超时的情况</td>
+</tr>
+<tr>
+<td>Write errors</td>
+<td>输出错误数量</td>
+</tr>
+<tr>
+<td>Total transferred</td>
+<td>整个场景中的网络传输量，表示所有请求的相应数据长度和，包括每个http相应数据的头部信息和正文数据的长度</td>
+</tr>
+<tr>
+<td>HTML transferred</td>
+<td>整个场景中的HTML内容传输量，表示所有请求的响应数据中正文数据的总和</td>
+</tr>
+<tr>
+<td>Requests per second</td>
+<td>每秒钟平均处理的请求数（相当于 LR 中的 每秒事务数）这便是我们重点关注的吞吐率，它等于：Complete  requests / Time taken for tests</td>
+</tr>
+<tr>
+<td>Time per request</td>
+<td>每个线程处理请求平均消耗时间（相当于 LR 中的 平均事务响应时间）用户平均请求等待时间</td>
+</tr>
+<tr>
+<td>Transfer rate</td>
+<td>平均每秒网络上的流量</td>
+</tr>
+<tr>
+<td>Percentage of the  requests served within  a certain time (ms)</td>
+<td>指定时间里，执行的请求百分比</td>
+</tr>
+</tbody></table>
+<p>l  重要指标</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>指标说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Requests persecond</td>
+<td>吞吐率:服务器并发处理能力的量化描述，单位是reqs/s，指的是在某个并发用户数下单位时间内处理的请求数。某个并发用户数下单位时间内能处理的最大请求数，称之为最大吞吐率。这个数值表示当前机器的整体性能，值越大越好。</td>
+</tr>
+<tr>
+<td>Time perrequest</td>
+<td>用户平均请求等待时间：从用户角度看，完成一个请求所需要的时间</td>
+</tr>
+<tr>
+<td>Time per request:across  all concurrent requests</td>
+<td>服务器平均请求等待时间：服务器完成一个请求的时间</td>
+</tr>
+<tr>
+<td>Concurrency Level</td>
+<td>并发用户数</td>
+</tr>
+</tbody></table>
+<p>参考文章：<a href="https://blog.csdn.net/woshisangsang/article/details/82879611" target="_blank" rel="noopener">https://blog.csdn.net/woshisangsang/article/details/82879611</a></p>
+<h3 id="10-2-Tomcat性能优化"><a href="#10-2-Tomcat性能优化" class="headerlink" title="10-2. Tomcat性能优化"></a>10-2. Tomcat性能优化</h3><h4 id="10-2-1-JVM参数调优"><a href="#10-2-1-JVM参数调优" class="headerlink" title="10-2-1. JVM参数调优"></a>10-2-1. JVM参数调优</h4><p>  Tomcat是一款Java应用，那么JVM的配置便与其运行性能密切相关，而JVM优化的重点则集中在内存分配和GC策略的调整上，因为内存会直接影响服务的运行效率和吞吐量，JVM垃圾回收机制则会不同程度地导致程序运行中断。</p>
+<p>可以根据应用程序的特点，选择不同的垃圾回收策略，调整JVM垃圾回收策略，可以极大减少垃圾回收次数，提升垃圾回收效率，改善程序运行性能</p>
+<p>l  JVM内存参数</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>参数作用</th>
+<th>优化建议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-server</td>
+<td>启动Server，以服务端模式运行</td>
+<td>服务端模式建议开启</td>
+</tr>
+<tr>
+<td>-Xms</td>
+<td>最小堆内存</td>
+<td>建议与-Xmx设置相同</td>
+</tr>
+<tr>
+<td>-Xmx</td>
+<td>最大堆内存</td>
+<td>建议设置为可用内存的80%</td>
+</tr>
+<tr>
+<td>-XX:MetaspaceSize</td>
+<td>元空间初始值</td>
+<td></td>
+</tr>
+<tr>
+<td>-XX:MaxMetaspaceSize</td>
+<td>元空间最大内存</td>
+<td>默认无限</td>
+</tr>
+<tr>
+<td>-XX:MaxNewSize</td>
+<td>新生代最大内存</td>
+<td>默认16M</td>
+</tr>
+<tr>
+<td>-XX:NewRatio</td>
+<td>年轻代和老年代大小比值，取值为证书，默认为2</td>
+<td>不建议修改</td>
+</tr>
+<tr>
+<td>-XX:SurvivorRatio</td>
+<td>Eden区域Survivor区大小的比值，取值为整数，默认为8</td>
+<td>不建议修改</td>
+</tr>
+</tbody></table>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image141.jpg" alt="img"></p>
+<p>l  查看JVM实际内存占用情况</p>
+<p>Jmap –heap Tomcat进程号</p>
+<h4 id="10-2-2-JVM垃圾收集器介绍"><a href="#10-2-2-JVM垃圾收集器介绍" class="headerlink" title="10-2-2. JVM垃圾收集器介绍"></a>10-2-2. JVM垃圾收集器介绍</h4><p>l  GC策略</p>
+<p>JVM垃圾回收性能有以下两个指标：</p>
+<p>Ø  吞吐量：工作时间（排除GC时间）占总时间的百分比，工作时间并不仅是程序运行的时间，还包含内存分配时间</p>
+<p>Ø  暂停时间：测试时间段内，由垃圾回收导致的应用程序停止响应次数/时间</p>
+<p>在Sun公司推出的HostSpotJVM中，包含以下几种不同类型的垃圾收集器：</p>
+<table>
+<thead>
+<tr>
+<th>垃圾收集器</th>
+<th>含义说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>串行收集器<br>  （serial collector）</td>
+<td>采用单线程执行所有的垃圾回收工作，适用于单核CPU服务器，无法利用多核硬件的优势</td>
+</tr>
+<tr>
+<td>并行收集器<br>  （Parallel Collector）</td>
+<td>又称为吞吐量收集器，以并行的方式执行年轻代的垃圾回收，该方式可以显著降低垃圾回收的开销（指多条垃圾收集线程并行工作，但此时用户线程仍然处于等待状态）。适用于多处理器或多线程硬件上运行的数据量较大的应用</td>
+</tr>
+<tr>
+<td>并发收集器<br>  （Concurrent Collector）</td>
+<td>以并发的方式执行大部分垃圾回收工作，以缩短垃圾回收的暂停时间。适用于那些响应时间优先于吞吐量的应用，因为该收集器虽然最小化了暂停时间（指用户线程与垃圾收集线程同时执行，但不一定是并行的，可能会交替进行），但是会降低应用程序的性能</td>
+</tr>
+<tr>
+<td>CMS收集器<br>  （Concurrent Mark Sweep Collector）</td>
+<td>并发标记清除收集器，适用于那些更愿意缩短垃圾回收暂停时间并且负担的起与垃圾回收共享处理器资源的应用适用于大容量内存的多核服务器，可以在满足垃圾回收暂停时间目标的同时，以最大可能性实现高吞吐量（JDK1.7之后）</td>
+</tr>
+<tr>
+<td>G1收集器<br>  （Garbage-First Garbage Collector）</td>
+<td>适用于大容量内存的多核服务器，可以在满足垃圾回收暂停时间目标的同时，以最大可能性实现高吞吐量（JDK1.7之后）</td>
+</tr>
+</tbody></table>
+<p>不同的应用程序，对于垃圾回收会有不同的需求。M会根据运行的平台、服务器资源配置情况选择合适的垃圾收集器、堆内存大小及运行时编译器。如无法满足需求，参考以下准则：</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  程序数据量较小，选择串行收集器</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  应用运行在单核处理器上且没有暂停时间要求，可交由JVM自行选择或选择串行收集器</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  如果考虑应用程序的峰值性能，没有暂停时间要求，可以选择并行收集器</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  如果应用程序的响应时间比整体吞吐星更重要，可以选择并发收集器</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image143.jpg" alt="img"></p>
+<p>l  查看Tomcat中默认的垃圾收集器</p>
+<p>Ø  在tomcat/bin/catalina.sh的配置中，加入如下代码：</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image145.jpg" alt="img"></p>
+<p>JAVA_OPTS=” -Djava.rmi.server.hostname=192.168.192.138 -Dcom.sun.management.jmxremote.port=8999 </p>
+<p>-Dcom.sun.management.jmxremote.rmi.port=8999 -Dcom.sun.management.jmxremote.asl=false</p>
+<p>-Dcom.sun.management.jmxremote.authenticate=false”</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image147.jpg" alt="img"></p>
+<p>Ø  打开jconsole，查看远程的Tomcat的概要信息</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image149.jpg" alt="img"></p>
+<p>l  GC参数</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>概述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-XX:+UseSerialGc</td>
+<td>启用串行收集器</td>
+</tr>
+<tr>
+<td>-XX:+UseParallelGC</td>
+<td>启用并行垃圾收集器，配置了该选项，那么-XX：+UseParalleloldGc默认启用</td>
+</tr>
+<tr>
+<td>-XX:+UseParalleloldGC</td>
+<td>Ful1Gc采用并行收集，默认禁用。如果设置了-xx：+UseParallelGc则自动启用</td>
+</tr>
+<tr>
+<td>-XX:+UseParNewGC</td>
+<td>年轻代采用并行收集器，如果设置了-XX：+UseConcMarksweepec选项，自动启用</td>
+</tr>
+<tr>
+<td>-XX:ParallelGCThreads</td>
+<td>年轻代及老年代垃圾回收使用的线程数。默认值依赖于JVM使用的cPU个数</td>
+</tr>
+<tr>
+<td>-XX:+UseConcMarksweepGc</td>
+<td>对于老年代，启用cMs垃圾收集器。当并行收集器无法满足应用的延迟需求是，推荐使用cMs或G1收集器。<br> 启用该选项后，-XX：+UseparNewGc自动启用。</td>
+</tr>
+<tr>
+<td>-XX:+UseG1GC</td>
+<td>启用G1收集器。G1是服务器类型的收集器，用于多核、大内存的机器。它在保持高吞吐量的情况下，高概率满足Gc暂停时间的目标。</td>
+</tr>
+</tbody></table>
+<p>l  打印GC信息</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>概述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-XX:+PrintGc</td>
+<td>打印每次cc的信息</td>
+</tr>
+<tr>
+<td>-XX+PrintGCApplicationConcurrentTime</td>
+<td>打印最后一次暂停之后所经过的时间，即响应并发执行的时间</td>
+</tr>
+<tr>
+<td>-XX+PrintGcApplicationstoppedrime</td>
+<td>打印GC时应用暂停时间</td>
+</tr>
+<tr>
+<td>-XX:+PrintGCDateStamps</td>
+<td>打印每次GC的日期戳</td>
+</tr>
+<tr>
+<td>-XX:+PrintGCDetails</td>
+<td>打印每次GC的详细信息</td>
+</tr>
+<tr>
+<td>-XX:+PrintGCTaskTimeStamps</td>
+<td>打印每个GC工作线程任务的时间戳</td>
+</tr>
+<tr>
+<td>-XX:+PrintGCTimeStamps</td>
+<td>印每次GC的时间戳</td>
+</tr>
+</tbody></table>
+<p>l  在bin/catalina.sh脚本中，追加如下配置：</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image151.jpg" alt="img"></p>
+<p>JAVA OPTS=”-XX:+UseConcMarkSweepGc -XX:+PrintGCDetails”</p>
+<h4 id="10-2-3-Tomcat配置调优"><a href="#10-2-3-Tomcat配置调优" class="headerlink" title="10-2-3. Tomcat配置调优"></a>10-2-3. Tomcat配置调优</h4><p>调整tomcat/conf/server.xml中关于链接器的配置可以提升应用服务器的性能</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>maxConnections</td>
+<td>最大连接数，当到达该值后，服务器接收但不会处理更多的请求，额外的请求将会阻塞直到连接数低于maxConnections。可通过ulimit-a查看服务器限制。对于CPU要求更高（计算型）时，建议不要配置过大；对于CPU要求不是特别高时，建议配置在2000左右（受服务器性能影响）。当然这个需要服务器硬件的支持</td>
+</tr>
+<tr>
+<td>maxThreads</td>
+<td>最大线程数，需要根据服务器的硬件状态，进行一个合理的设置</td>
+</tr>
+<tr>
+<td>acceptCount</td>
+<td>最大排队等待数，当服务器接收的请求数量到达maxconnections，此时Tomcat会将后面的请求，存放在任务队列中进行排序，acceptcount指的就是任务队列中排队等待的请求数。一台Tomcat的最大的请求处理数量，是maxConnections+acceptCount。</td>
+</tr>
+</tbody></table>
+<p>参考文章：</p>
+<p><a href="https://blog.csdn.net/u010195563/article/details/80966025" target="_blank" rel="noopener">https://blog.csdn.net/u010195563/article/details/80966025</a></p>
+<p><a href="https://www.cnblogs.com/songanwei/p/9440970.html" target="_blank" rel="noopener">https://www.cnblogs.com/songanwei/p/9440970.html</a></p>
+<p><a href="https://blog.csdn.net/zs742946530/article/details/82346707" target="_blank" rel="noopener">https://blog.csdn.net/zs742946530/article/details/82346707</a></p>
+<h2 id="第十一节：Tomcat附加功能"><a href="#第十一节：Tomcat附加功能" class="headerlink" title="第十一节：Tomcat附加功能"></a>第十一节：Tomcat附加功能</h2><h3 id="11-1-websocket"><a href="#11-1-websocket" class="headerlink" title="11-1. websocket"></a>11-1. websocket</h3><h4 id="11-1-1-Websocket介绍"><a href="#11-1-1-Websocket介绍" class="headerlink" title="11-1-1. Websocket介绍"></a>11-1-1. Websocket介绍</h4><p>WebSocket是HTML5新增的协议，它的目的是在浏览器和服务器之间建立一个不受限的双向通信的通道，比如说，服务器可以在任意时刻发送消息给浏览器。</p>
+<p>为什么传统的HTTp协议不能做到WebSocket实现的功能？这是因为HTTP协议是一个请求-响应协议，请求必须先由浏览器发给服务器，服务器才能响应这个请求，再把数据发送给浏览器。换句话说，浏览器不主动请求，服务器是没法主动发数据给浏览器的。</p>
+<p>这样一来，要在浏览器中搞一个实时聊天，或者在线多人游戏的话就没法实现了，只能借助Flash这些插件。也有人说，HTTP协议其实也能实现啊，比如用轮询或者Comet。轮询是指浏览器通过Javascript启动一个定时器，然后以固定的间隔给服务器发请求，询问服务器有没有新消息。这个机制的缺点一是实时性不够，二是频繁的请求会给服务器带来极大的压力。</p>
+<p>Comet本质上也是轮询，但是在没有消息的情况下，服务器先拖一段时间，等到有消息了再回复。这个机制暂时地解决了实时性问题，但是它带来了新的问题：以多线程模式运行的服务器会让大部分线程大部分时间都处于挂起状态，极大地浪费服务器资源。另外，一个HTTP连接在长时间没有数据传输的情况下，链路上的任何一个网关都可能关闭这个连接，而网关是我们不可控的，这就要求Comet连接必须定期发一些ping数据表示连接“正常工作”。</p>
+<p>以上两种机制都治标不治本，所以，HTML5推出了Websocket标准，让浏览器和服务器之间可以建立无限制的全双工通信，任何一方都可以主动发消息给对方。Websocket并不是全新的协议，而是利用了HTTp协议来建立连接。我们来看看WebSocket连接是如何创建的：</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image153.jpg" alt="img"></p>
+<p>首先，WebSocket连接必须由浏览器发起，因为请求协议是一个标准的HTTP请求，格式如下：</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image155.jpg" alt="img"></p>
+<p>l  Websocket与普通HTTP请求的不同：</p>
+<p>Ø  GET请求的地址不是类似http://，而是以ws://开头的地址；</p>
+<p>Ø  请求头connection:Upgrade 和请求头Upgrade:websocket 表示这个连接将要被转换为Websocket连接；</p>
+<p>Ø  sec-Websocket-Key 是用于标识这个连接，是一个BASE64编码的密文，要求服务端响应一个对应加密的sec-WebSocket-Accept头信息作为应答；</p>
+<p>Ø  sec-WebSocket-Version 指定了WebSocket的协议版本；</p>
+<p>Ø  HTTP101状态码表明服务端已经识别并切换为Websocket协议，Sec-Websocket-Accept是服务端与客户端一致的秘钥计算出来的信息。</p>
+<h4 id="11-1-2-Tomcat的Websocket"><a href="#11-1-2-Tomcat的Websocket" class="headerlink" title="11-1-2. Tomcat的Websocket"></a>11-1-2. Tomcat的Websocket</h4><p>  Tomcat的7.0.5版本开始支持Websocket，并且实现了Java WebSocket规范（JSR356），而在7.0.5版本之前（7.0.2之后）则采用自定义API，即WebsocketServlet实现。</p>
+<p>Java Websocket应用由一系列的WebsocketEndpoint组成。Endpoint是一个java对象，代表Websocket链接的一端，对于服务端，我们可以视为处理具体WebSocket消息的接口，就像Servlet之与http请求一样。</p>
+<p>l  我们可以通过两种方式定义Endpoint</p>
+<p>Ø  第一种是编程式：即继承类javax.websocket.Endpoint并实现其方法</p>
+<p>Ø  第二种是注解式，即定义一个poJo，并添加@serverEndpoint相关注解</p>
+<p>Endpoint实例在Websocket握手时创建，并在客户端与服务端链接过程中有效，最后在链接关闭时结束。在Endpoint接口中明确定义了与其生命周期相关的方法，规范实现者确保生命周期的各个阶段调用实例的相关方法。生命周期方法如下：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>含义描述</th>
+<th>注解</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>onOpen</td>
+<td>当开启一个新的会话时调用，该方法是客户端与服务器握手成功后调用的方法</td>
+<td>@OnOpen</td>
+</tr>
+<tr>
+<td>onClose</td>
+<td>当会话关闭时调用</td>
+<td>@OnClose</td>
+</tr>
+<tr>
+<td>onError</td>
+<td>当连接过程中异常时调用</td>
+<td>@OnError</td>
+</tr>
+</tbody></table>
+<p>通过为Websocket Session添加MessagelHandler消息处理器来接收消息，当采用注解方式定义Endpoint时，我们还可以通过@OnMessage 注解指定接收消息的方法。发送消息则由RemoteEndpoint完成，其实例由Session维护，根据使用情况，我们可以通过session.getBasicRemote获取同步消息发送的实例，然后调用其sendXxx（）方法就可以发送消息，可以通过session.getAsyncRemote 获取异步消息发送实例。 </p>
+<h3 id="11-2．-WebSocket-DEMO案例"><a href="#11-2．-WebSocket-DEMO案例" class="headerlink" title="11-2． WebSocket DEMO案例"></a>11-2． WebSocket DEMO案例</h3><p>通过WebSocket实现一个简易的聊天功能</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  登录聊天室</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image157.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image001.gif" alt="*">  聊天窗口展示</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image159.jpg" alt="img"></p>
+<p>l  聊天室功能实现流程</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image161.jpg" alt="img"></p>
+<p>l  消息格式</p>
+<p>Ø  客户端–&gt;服务端：{“fromName”：”Deng”，”toName”：”HEIMA”，”content”：”约会呀”}</p>
+<p>Ø  服务端–&gt;客户端：I</p>
+<p>①.如果type为user，则说明返回的是用户列表</p>
+<p>{“data”：”HEIMA，Deng，ITCAsT”，”toName”：””，”fromName”：””，”type”：”user”}</p>
+<p>②.如果type为message，则说明返回的是消息内容</p>
+<p>{“data”：”你好”，”toName”：”HEIMA”，”fromName”：”Deng”，”type”：”message”}</p>
+<h4 id="11-2-1-基于WebSocket聊天室的功能实现"><a href="#11-2-1-基于WebSocket聊天室的功能实现" class="headerlink" title="11-2-1. 基于WebSocket聊天室的功能实现"></a>11-2-1. 基于WebSocket聊天室的功能实现</h4><p>l  在IDEA中创建web工程</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image162.png" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image164.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image166.jpg" alt="img"></p>
+<p>Ø  引入依赖包文件</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image167.png" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image169.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image170.png" alt="img"></p>
+<p>Ø  引入静态资源文件</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image172.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image174.jpg" alt="img"></p>
+<p>Ø  修改web.xml中的默认欢迎页面</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image176.jpg" alt="img"></p>
+<p>Ø  重新部署应用</p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image178.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image180.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image182.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image184.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image186.jpg" alt="img"></p>
+<h4 id="11-2-2-登录功能代码详解"><a href="#11-2-2-登录功能代码详解" class="headerlink" title="11-2-2. 登录功能代码详解"></a>11-2-2. 登录功能代码详解</h4><p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image188.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image190.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image192.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image194.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image196.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image198.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image200.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image202.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image204.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image206.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image208.jpg" alt="img"></p>
+<p><img src="/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image210.jpg" alt="img"></p>
+</Server></Server></distributable></Cluster></user></role></role></user></role></role></aontext-param></Listener>
+    </div>
+
+    
+    
+    
+
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+      
+    </div>
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>晓晨
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://yoursite.com/2020/06/03/Tomcat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="Tomcat学习笔记">http://yoursite.com/2020/06/03/Tomcat学习笔记/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/06/02/HAProxy%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="prev" title="HAProxy学习笔记">
+      <i class="fa fa-chevron-left"></i> HAProxy学习笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/06/03/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="next" title="Redis学习笔记">
+      Redis学习笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#第一节：Tomcat相关基础"><span class="nav-number">1.</span> <span class="nav-text">第一节：Tomcat相关基础</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-web概念"><span class="nav-number">1.1.</span> <span class="nav-text">1-1.    web概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-常见的WEB服务器软件"><span class="nav-number">1.2.</span> <span class="nav-text">1-2.    常见的WEB服务器软件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-Tomcat安装及目录结构（以Windows为例）"><span class="nav-number">1.3.</span> <span class="nav-text">1-3.    Tomcat安装及目录结构（以Windows为例）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第二节：Tomcat架构"><span class="nav-number">2.</span> <span class="nav-text">第二节：Tomcat架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-HTTP工作原理"><span class="nav-number">2.1.</span> <span class="nav-text">2-1. HTTP工作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-Tomcat整体架构"><span class="nav-number">2.2.</span> <span class="nav-text">2-2. Tomcat整体架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-Coyote连接器架构介绍"><span class="nav-number">2.3.</span> <span class="nav-text">2-3. Coyote连接器架构介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-Coyote连接器组件"><span class="nav-number">2.4.</span> <span class="nav-text">2-4. Coyote连接器组件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-Catalina容器架构"><span class="nav-number">2.5.</span> <span class="nav-text">2-5. Catalina容器架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-6-Tomcat启动流程"><span class="nav-number">2.6.</span> <span class="nav-text">2-6. Tomcat启动流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-7-Tomcat启动涉及组件"><span class="nav-number">2.7.</span> <span class="nav-text">2-7. Tomcat启动涉及组件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-8-从源码分析Tomcat启动流程"><span class="nav-number">2.8.</span> <span class="nav-text">2-8. 从源码分析Tomcat启动流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-9-Tomcat-Debug源码跟踪启动"><span class="nav-number">2.9.</span> <span class="nav-text">2-9. Tomcat Debug源码跟踪启动</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-10-Tomcat请求处理流程"><span class="nav-number">2.10.</span> <span class="nav-text">2-10. Tomcat请求处理流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-11-源码跟踪Tomcat请求处理流程"><span class="nav-number">2.11.</span> <span class="nav-text">2-11. 源码跟踪Tomcat请求处理流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第三节：Jasper引擎"><span class="nav-number">3.</span> <span class="nav-text">第三节：Jasper引擎</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-Jasper引擎介绍"><span class="nav-number">3.1.</span> <span class="nav-text">3-1. Jasper引擎介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-Jasper编译方式"><span class="nav-number">3.2.</span> <span class="nav-text">3-2. Jasper编译方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第四节：Tomcat服务器配置文件"><span class="nav-number">4.</span> <span class="nav-text">第四节：Tomcat服务器配置文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-Server-xml配置文件"><span class="nav-number">4.1.</span> <span class="nav-text">4-1. Server.xml配置文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-1-Server指令块配置介绍"><span class="nav-number">4.1.1.</span> <span class="nav-text">4-1-1. Server指令块配置介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-2-Executor指令块配置介绍"><span class="nav-number">4.1.2.</span> <span class="nav-text">4-1-2. Executor指令块配置介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-3-Connector指令块配置介绍"><span class="nav-number">4.1.3.</span> <span class="nav-text">4-1-3. Connector指令块配置介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-4-Engine指令块配置介绍"><span class="nav-number">4.1.4.</span> <span class="nav-text">4-1-4. Engine指令块配置介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-5-Host指令块配置介绍"><span class="nav-number">4.1.5.</span> <span class="nav-text">4-1-5. Host指令块配置介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-6-Context指令块配置介绍"><span class="nav-number">4.1.6.</span> <span class="nav-text">4-1-6. Context指令块配置介绍</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-tomcat-user-xml配置文件"><span class="nav-number">4.2.</span> <span class="nav-text">4-2. tomcat-user.xml配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-创建虚拟目录"><span class="nav-number">4.3.</span> <span class="nav-text">4-3. 创建虚拟目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-创建虚拟主机"><span class="nav-number">4.4.</span> <span class="nav-text">4-4. 创建虚拟主机</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第五节：Web应用配置"><span class="nav-number">5.</span> <span class="nav-text">第五节：Web应用配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-ServletContext初始化参数"><span class="nav-number">5.1.</span> <span class="nav-text">5-1. ServletContext初始化参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-session会话配置"><span class="nav-number">5.2.</span> <span class="nav-text">5-2. session会话配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-Servlet配置"><span class="nav-number">5.3.</span> <span class="nav-text">5-3. Servlet配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4-Listener配置"><span class="nav-number">5.4.</span> <span class="nav-text">5-4. Listener配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-5-Filter配置"><span class="nav-number">5.5.</span> <span class="nav-text">5-5. Filter配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-6-欢迎页和错误页"><span class="nav-number">5.6.</span> <span class="nav-text">5-6. 欢迎页和错误页</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-7-手工实现一个简单静态web应用"><span class="nav-number">5.7.</span> <span class="nav-text">5-7. 手工实现一个简单静态web应用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第六节：Tomcat管理配置"><span class="nav-number">6.</span> <span class="nav-text">第六节：Tomcat管理配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-Host-Manager"><span class="nav-number">6.1.</span> <span class="nav-text">6-1. Host-Manager</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-Manager-APP"><span class="nav-number">6.2.</span> <span class="nav-text">6-2. Manager APP</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第七节：JVM"><span class="nav-number">7.</span> <span class="nav-text">第七节：JVM</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#7-1-JVM内存模型"><span class="nav-number">7.1.</span> <span class="nav-text">7-1.  JVM内存模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-2-JVM配置选项"><span class="nav-number">7.2.</span> <span class="nav-text">7-2. JVM配置选项</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第八节：Tomcat集群"><span class="nav-number">8.</span> <span class="nav-text">第八节：Tomcat集群</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#8-1-Tomcat集群简介"><span class="nav-number">8.1.</span> <span class="nav-text">8-1. Tomcat集群简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-2-Tomcat集群环境准备"><span class="nav-number">8.2.</span> <span class="nav-text">8-2. Tomcat集群环境准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-3-Session（记录客户状态的机制）共享方案"><span class="nav-number">8.3.</span> <span class="nav-text">8-3. Session（记录客户状态的机制）共享方案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第九节：Tomcat安全"><span class="nav-number">9.</span> <span class="nav-text">第九节：Tomcat安全</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第十节：Tomcat性能调优"><span class="nav-number">10.</span> <span class="nav-text">第十节：Tomcat性能调优</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#10-1-Tomcat性能测试"><span class="nav-number">10.1.</span> <span class="nav-text">10-1. Tomcat性能测试</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#10-1-1-ApacheBench压力测试工具"><span class="nav-number">10.1.1.</span> <span class="nav-text">10-1-1. ApacheBench压力测试工具</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-2-Tomcat性能优化"><span class="nav-number">10.2.</span> <span class="nav-text">10-2. Tomcat性能优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#10-2-1-JVM参数调优"><span class="nav-number">10.2.1.</span> <span class="nav-text">10-2-1. JVM参数调优</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#10-2-2-JVM垃圾收集器介绍"><span class="nav-number">10.2.2.</span> <span class="nav-text">10-2-2. JVM垃圾收集器介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#10-2-3-Tomcat配置调优"><span class="nav-number">10.2.3.</span> <span class="nav-text">10-2-3. Tomcat配置调优</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第十一节：Tomcat附加功能"><span class="nav-number">11.</span> <span class="nav-text">第十一节：Tomcat附加功能</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#11-1-websocket"><span class="nav-number">11.1.</span> <span class="nav-text">11-1. websocket</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#11-1-1-Websocket介绍"><span class="nav-number">11.1.1.</span> <span class="nav-text">11-1-1. Websocket介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#11-1-2-Tomcat的Websocket"><span class="nav-number">11.1.2.</span> <span class="nav-text">11-1-2. Tomcat的Websocket</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-2．-WebSocket-DEMO案例"><span class="nav-number">11.2.</span> <span class="nav-text">11-2． WebSocket DEMO案例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#11-2-1-基于WebSocket聊天室的功能实现"><span class="nav-number">11.2.1.</span> <span class="nav-text">11-2-1. 基于WebSocket聊天室的功能实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#11-2-2-登录功能代码详解"><span class="nav-number">11.2.2.</span> <span class="nav-text">11-2-2. 登录功能代码详解</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="晓晨"
+      src="/images/touxiang.jpg">
+  <p class="site-author-name" itemprop="name">晓晨</p>
+  <div class="site-description" itemprop="description">乱世浮尘，不堪遥望，唯有情意，晨光依旧</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <script src="https://soyawww.github.io/live2d/autoload.js"></script>
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">晓晨</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

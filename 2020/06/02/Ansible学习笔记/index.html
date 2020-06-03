@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"8.0.0-rc.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="​        ansible是新出现的自动化运维工具，基于Python开发，集合了众多运维工具（puppet、chef、func、fabric）的优点，实现了批量系统配置、批量程序部署、批量运行命令等功能。 　　 ​        ansible是基于 paramiko 开发的,并且基于模块化工作，本身没有批量部署的能力。真正具有批量部署的是ansible所运行的模块，ansible只是提供一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ansible学习笔记">
+<meta property="og:url" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="晓晨の博客">
+<meta property="og:description" content="​        ansible是新出现的自动化运维工具，基于Python开发，集合了众多运维工具（puppet、chef、func、fabric）的优点，实现了批量系统配置、批量程序部署、批量运行命令等功能。 　　 ​        ansible是基于 paramiko 开发的,并且基于模块化工作，本身没有批量部署的能力。真正具有批量部署的是ansible所运行的模块，ansible只是提供一">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image003.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image005.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image007.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image009.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image012.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image014.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image016.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image018.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image020.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image022.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image024.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image026.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image028.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image030.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image032.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image034.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image036.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image038.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image040.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image042.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image044.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image046.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image048.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image050.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image052.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image054.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image056.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image058.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image060.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image062.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image064.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image066.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image068.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image071.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image073.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image075.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image077.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image079.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image081.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image083.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image085.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image088.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image090.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image092.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image094.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image096.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image098.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image100.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image102.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image104.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image106.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image108.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image110.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image112.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image114.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image116.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image118.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image120.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image122.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image124.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image126.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image128.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image130.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image132.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image134.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image136.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image138.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image140.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image142.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image144.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image146.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image148.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image150.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image152.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image154.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image156.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image158.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image160.jpg">
+<meta property="article:published_time" content="2020-06-02T08:22:28.000Z">
+<meta property="article:modified_time" content="2020-06-03T03:39:35.698Z">
+<meta property="article:author" content="晓晨">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image003.jpg">
+
+<link rel="canonical" href="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Ansible学习笔记 | 晓晨の博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">晓晨の博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">0</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">0</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">7</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/touxiang.jpg">
+      <meta itemprop="name" content="晓晨">
+      <meta itemprop="description" content="乱世浮尘，不堪遥望，唯有情意，晨光依旧">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="晓晨の博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Ansible学习笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-06-02 16:22:28" itemprop="dateCreated datePublished" datetime="2020-06-02T16:22:28+08:00">2020-06-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-06-03 11:39:35" itemprop="dateModified" datetime="2020-06-03T11:39:35+08:00">2020-06-03</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>​        ansible是新出现的自动化运维工具，基于Python开发，集合了众多运维工具（puppet、chef、func、fabric）的优点，实现了批量系统配置、批量程序部署、批量运行命令等功能。 　　</p>
+<p>​        ansible是基于 paramiko 开发的,并且基于模块化工作，本身没有批量部署的能力。真正具有批量部署的是ansible所运行的模块，ansible只是提供一种框架。ansible不需要在远程主机上安装client/agents，因为它们是基于ssh来和远 程主机通讯的。ansible目前已经已经被红帽官方收购，是自动化运维工具中大家认可度最高的，并且上手容易，学习简单。是每位运维工程师必须掌握的技能之一。</p>
+<a id="more"></a>
+
+<h1 id="第一节：Ansible入门"><a href="#第一节：Ansible入门" class="headerlink" title="第一节：Ansible入门"></a>第一节：Ansible入门</h1><p>l Ansible使用范围</p>
+<p>自动化部署应用</p>
+<p>自动化管理配置</p>
+<p>自动化持续交付</p>
+<p>自动化云服务管理</p>
+<p>自动化网络设备管理</p>
+<p>l Ansible项目</p>
+<p>Ø Ansible Galaxy是一个用于查找，共享，使用 Ansible role的在线社区</p>
+<p><a href="https://galaxy.ansible.com" target="_blank" rel="noopener">https://galaxy.ansible.com</a> </p>
+<p>Ø Ansible Container是一个开源项目，旨在实现整个容器构建，部署和管理过程的自动化。</p>
+<p><a href="https://github.com/ansible/ansible-container" target="_blank" rel="noopener">https://github.com/ansible/ansible-container</a></p>
+<p>l Ansible管理节点要求</p>
+<p>Ø 对管理主机的要求目前只要机器上安装了 Python2（版本2.6或27）或 Python3（版本3.5及更高版本）都可以运行 Ansible</p>
+<p>Ø 管理主机的系统可以是 Red Hat, Debian, Centos,OSⅩ，BSD的各种版本</p>
+<p>Ø 对节点主机的要求通常我们使用ssh与节点通信，默认使用sftp方式。如果sft不可用，可在 ansible.cfg配置文件中配置成scp的方式在节点上也需要安装 Python2（26或更高版本）或 Python3（35或更高版本）</p>
+<p>l Ansible学习资源</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image003.jpg">
+
+<p>l 运维自动化发展历程及技术应用</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image005.jpg">
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image007.jpg">
+
+<p>l 自动化运维应用场景</p>
+<p>Ø 文件相关</p>
+<p>Ø 命令执行</p>
+<blockquote>
+<p>应用部署</p>
+</blockquote>
+<blockquote>
+<p>配置管理</p>
+</blockquote>
+<blockquote>
+<p>任务流编排</p>
+</blockquote>
+<p>Ø 无代理架构</p>
+<blockquote>
+<p>使用Openssh通信</p>
+</blockquote>
+<blockquote>
+<p>没有代理维护成本</p>
+</blockquote>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image009.jpg">
+
+<p>&lt;img src=’Ansible学习笔记/clip_image010.png)</p>
+<h2 id="Ansible配置文件"><a href="#Ansible配置文件" class="headerlink" title="Ansible配置文件"></a>Ansible配置文件</h2><p>配置文件存在不同的位置，但只有一个可用，在下列列表中， ansible从上往下依次检查，检査到哪个可用就用哪个</p>
+<p>Ø ANSIBLE CONFIG环境变量，可以定义配置文件的位置</p>
+<p>Ø ./ ansible. cfg存在于当前工作目录</p>
+<p>Ø ~/.ansible. cfg存在与当前用户家目录</p>
+<p>Ø /etc/ ansible/ ansible. cfg默认目录</p>
+<h2 id="Ansible-–Inventory主机列表"><a href="#Ansible-–Inventory主机列表" class="headerlink" title="Ansible –Inventory主机列表"></a>Ansible –Inventory主机列表</h2><p>Ansible可同时操作属于一个组的多台主机组和主机之间的关系通过 Inventory文件配置默认的文件路径为/etc/ ansible/ hosts</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image012.jpg">
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image014.jpg">
+ <img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image016.jpg">
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image018.jpg">
+
+<p>Ø 配置ansible主机清单</p>
+<p>vim /etc/ansible/hosts</p>
+<p>Ø 配置测试主机验证功能状态</p>
+<p>[testserver]</p>
+<p>10.20.254.178 ansible_ssh_user=root ansible_ssh_pass=root</p>
+<p>ansible testserver -a “df -h”</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image020.jpg">
+
+<p>Ø ansible.cfg文件配置常规项</p>
+<p>config file = /etc/ansible/ansible.cfg</p>
+<p>[defaults]</p>
+<p>inventory   = /etc/ansible/hosts  ##主机列表文件</p>
+<p>forks     = 5  ##工作进程数</p>
+<p>remote_port  = 22  ##SSH通信端口</p>
+<p>host_key_checking = False  ##不检查目标主机秘钥</p>
+<p>timeout = 10 ##超时时间</p>
+<p>log_path = /var/log/ansible.log  ##日志文件存放位置</p>
+<p>private_key_file = /root/.ssh/id_rsa ##指定本机私钥，通过秘钥验证时使用</p>
+<p>Ø Inventory主机清单配置示例</p>
+<p>vim /etc/ansible/hosts</p>
+<p># Ex 1: Ungrouped hosts, specify before any group headers.  ##未分组清单，默认为ALL</p>
+<p>## green.example.com</p>
+<p>## blue.example.com</p>
+<p>## 192.168.100.1</p>
+<p>## 192.168.100.10</p>
+<p># Ex 2: A collection of hosts belonging to the ‘webservers’ group ##web服务器清单</p>
+<p>## [webservers]</p>
+<p>## alpha.example.org</p>
+<p>## beta.example.org</p>
+<p>## 192.168.1.100</p>
+<p>## 192.168.1.110</p>
+<p># If you have multiple hosts following a pattern you can specify</p>
+<p># them like this:</p>
+<p>## www[001:006].example.com</p>
+<p># Ex 3: A collection of database servers in the ‘dbservers’ group ##数据库服务器清单</p>
+<p>## [dbservers]</p>
+<p>## </p>
+<p>## db01.intranet.mydomain.net</p>
+<p>## db02.intranet.mydomain.net</p>
+<p>## 10.25.1.56</p>
+<p>## 10.25.1.57</p>
+<p># Here’s another example of host ranges, this time there are no</p>
+<p># leading 0s:</p>
+<p>## db-[99:101]-node.example.com</p>
+<p>Ø Inventory主机清单变量</p>
+<blockquote>
+<p>主机变量</p>
+</blockquote>
+<p>vim /etc/ansible/hosts</p>
+<p>10.20.254.178 ansible_ssh_user=root ansible_ssh_pass=root http_port=80</p>
+<p>[root@baikeying ~]# ansible testserver -a “echo “</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image022.jpg">
+
+<blockquote>
+<p>全局变量</p>
+</blockquote>
+<p>[root@baikeying ~]# mkdir /etc/ansible/group_vars</p>
+<p>[root@baikeying ~]# vim /etc/ansible/group_vars/testserver.yml</p>
+<p>host_name: zabbix.server</p>
+<p>ssh_status: open</p>
+<p>[root@baikeying ~]# ansible testserver -a “echo “</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image024.jpg">
+
+<p>[root@baikeying ~]# ansible testserver -a “echo “</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image026.jpg">
+
+
+
+
+
+<h2 id="Ansible–ad-hoc命令行操作"><a href="#Ansible–ad-hoc命令行操作" class="headerlink" title="Ansible–ad-hoc命令行操作"></a>Ansible–ad-hoc命令行操作</h2><img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image028.jpg">
+
+<p>Ø -m参数使用shell模块执行重定向等操作</p>
+<p>[root@baikeying ~]# ansible testserver -m shell -a “echo ansible &gt;&gt; /tmp/123.txt”</p>
+<p>[root@baikeying ~]# ansible testserver -m shell -a “cat /tmp/123.txt”</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image030.jpg">
+
+<p>l SSH秘钥验证</p>
+<p>Ø ssh-keygen生成秘钥对</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image032.jpg">
+
+<p>Ø ssh-copy-id <a href="mailto:root@10.20.254.178">root@10.20.254.178</a>上传至对方服务器</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image034.jpg">
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image036.jpg">
+
+<p>Ø 修改/etc/ansible/hosts文件，取消用户密码验证，并测试访问控制</p>
+<p>[testserver]</p>
+<p>10.20.254.178 ansible_ssh_user=root</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image038.jpg">
+
+
+
+
+
+<h1 id="第二节：ansible常用模块"><a href="#第二节：ansible常用模块" class="headerlink" title="第二节：ansible常用模块"></a>第二节：ansible常用模块</h1><p>² 执行Shell命令（ command和shell）</p>
+<p>² 文件传输（copy和file）</p>
+<p>² 管理软件包（yum）</p>
+<p>² 用户和组（user）</p>
+<p>² 从源代码管理系统部署（git）</p>
+<p>² 管理服务（ service）</p>
+<p>² 收集目标主机信息（ setup）</p>
+<h2 id="Ansible-u参数使用方法"><a href="#Ansible-u参数使用方法" class="headerlink" title="Ansible-u参数使用方法"></a>Ansible-u参数使用方法</h2><p>Ø 修改/etc/ansible/hosts文件，取消指定访问用户</p>
+<p>[testserver]</p>
+<p>10.20.254.178</p>
+<p>Ø 在目标主机创建普通用户，ansible使用普通用户访问测试</p>
+<p>[root@baikeying ~]# ansible testserver -m shell -a “pwd” -u anuser1 –k</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image040.jpg">
+
+<p>Ø 在目标主机为普通用户添加sudu权限，ansible使用普通用户测试sudo权限</p>
+<p>visudo</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image042.jpg">
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image044.jpg">
+
+<p>[root@baikeying ~]# ansible testserver -m shell -a “ls /root” -u anuser1 -k –become –become-user root –ask-become-pass（可缩写为-K）</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image046.jpg">
+
+<p>###############################################################################</p>
+<h2 id="Ansible—copy模块使用方法"><a href="#Ansible—copy模块使用方法" class="headerlink" title="Ansible—copy模块使用方法"></a>Ansible—copy模块使用方法</h2><p><strong>将本机文件拷贝到远程主机</strong></p>
+<p>[root@baikeying ~]# ansible testserver -m copy -a “src=sshpass-1.06.tar.gz dest=/opt” -u root</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image048.jpg">
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image050.jpg">
+
+<h2 id="Ansible—file模块使用方法"><a href="#Ansible—file模块使用方法" class="headerlink" title="Ansible—file模块使用方法"></a>Ansible—file模块使用方法</h2><p><strong>在远程主机创建目录、文件</strong></p>
+<p>[root@baikeying ~]# ansible testserver -m file -a “dest=/media/soft mode=600 state=directory” -u root</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image052.jpg">
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image054.jpg">
+
+<p>Ø state状态选项</p>
+<blockquote>
+<p>file—判断是否已存在，不存在不会创建</p>
+</blockquote>
+<blockquote>
+<p>directory—目录</p>
+</blockquote>
+<blockquote>
+<p>link—软连接</p>
+</blockquote>
+<blockquote>
+<p>hard—硬链接</p>
+</blockquote>
+<blockquote>
+<p>touch—创建空文件</p>
+</blockquote>
+<blockquote>
+<p>absent—删除文件或目录</p>
+</blockquote>
+<p>[root@baikeying ~]# ansible testserver -m file -a “dest=/media/soft state=absent” -u root</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image056.jpg">
+
+<h2 id="Ansible–yum模块使用方法"><a href="#Ansible–yum模块使用方法" class="headerlink" title="Ansible–yum模块使用方法"></a>Ansible–yum模块使用方法</h2><p><strong>通过yum**</strong>模块为远程主机部署服务**</p>
+<p>Ø 确保需部署的服务在目标主句不存在，通过ansible命令完成远程部署</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image058.jpg">
+
+<p>[root@baikeying ~]# ansible testserver -m yum -a “name=memcached state=present” -u root</p>
+<p>##state状态共有三个：present指定版本安装、latest最新版本安装、absent卸载</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image060.jpg">
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image062.jpg">
+
+
+
+<h2 id="Ansible—user模块使用方法"><a href="#Ansible—user模块使用方法" class="headerlink" title="Ansible—user模块使用方法"></a>Ansible—user模块使用方法</h2><p>Ø 通过ansible在远程主机创建用户</p>
+<p>[root@baikeying ~]# ansible testserver -m user -a “name=foo password=neigou.com” -u root</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image064.jpg">
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image066.jpg">
+
+
+
+<p>Ø 通过ansible在远程主机创建一个非交互用户</p>
+<p>[root@baikeying ~]# ansible testserver -m user -a “name=sql password=neigou.com shell=/bin/nologin” -u root</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image068.jpg">
+
+<p>&lt;img src=’Ansible学习笔记/clip_image069.png)</p>
+<p>Ø 通过ansible删除远程主机用户</p>
+<p>[root@baikeying ~]# ansible testserver -m user -a “name=foo state=absent” -u root</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image071.jpg">
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image073.jpg">
+
+
+
+<h2 id="Ansible—Git模块使用方法"><a href="#Ansible—Git模块使用方法" class="headerlink" title="Ansible—Git模块使用方法"></a>Ansible—Git模块使用方法</h2><p>Ø Git模块要求目标主机需要安装git</p>
+<p>[root@baikeying ~]# ansible testserver -m yum -a “name=git state=present” -u root</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image075.jpg">
+
+<p>Ø 使用Git模块在远程主机上拉取Git项目代码</p>
+<p>[root@baikeying ~]# ansible testserver -m git -a “repo=<a href="https://github.com/ansible/ansible.git" target="_blank" rel="noopener">https://github.com/ansible/ansible.git</a> dest=/opt/ansible” -u root</p>
+<h2 id="Ansible—server模块使用方法"><a href="#Ansible—server模块使用方法" class="headerlink" title="Ansible—server模块使用方法"></a>Ansible—server模块使用方法</h2><p>Ø 通过ansible为远程主机安装memcached，并查看启动状态</p>
+<p>[root@baikeying ~]# ansible testserver -m yum -a “name=memcached state=present” -u root</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image077.jpg">
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image079.jpg">
+
+<p>Ø 通过ansible—server模块管理远程主机服务</p>
+<blockquote>
+<p>started、stoped、restarted、reloaded</p>
+</blockquote>
+<p>[root@baikeying ~]# ansible testserver -m service -a “name=memcached state=started” -u root</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image081.jpg">
+
+<blockquote>
+<p>通过ansible—server模块添加远程主机开机自启</p>
+</blockquote>
+<p>[root@baikeying ~]# ansible testserver -m service -a “name=memcached enabled=true” -u root</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image083.jpg">
+
+
+
+<h2 id="Ansible—setup模块使用方法"><a href="#Ansible—setup模块使用方法" class="headerlink" title="Ansible—setup模块使用方法"></a>Ansible—setup模块使用方法</h2><p><strong>使用setup**</strong>模块手机目标主机信息**</p>
+<p>[root@baikeying ~]# ansible testserver -m setup &gt;&gt; /tmp/setup.txt</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image085.jpg">
+
+
+
+
+
+<h1 id="第三节：Playbook基本使用"><a href="#第三节：Playbook基本使用" class="headerlink" title="第三节：Playbook基本使用"></a>第三节：Playbook基本使用</h1><p>l YAML语法格式</p>
+<p>Ø 缩进表示层级关系</p>
+<p>Ø 不支持制表符“tab”缩进，使用空格缩进</p>
+<p>Ø 通常开头缩进2个空格</p>
+<p>Ø 特殊符号后缩进1个空格，如冒号、逗号等</p>
+<p>Ø “—“表示YAML格式，一个文件的开始</p>
+<p>Ø #”注释</p>
+<p>l Playbook文件结构</p>
+<p>Ø 小型Playbook文件结构</p>
+<p>- name: play1            #指定的playbook名字</p>
+<p> hosts: webservers         #指定主机组</p>
+<p> remote_user: root         #指定运行用户</p>
+<p> vars:               #指定变量名</p>
+<p>  var_name: value</p>
+<p> tasks:              #指定要在playbook要做的那些事情</p>
+<p>  - name: echo          #指定输出的哪个阶段显示</p>
+<p>   shell: “echo “  #指定需要执行的命令</p>
+<p>Ø 大型Playbook结构</p>
+<p>Playname</p>
+<p>├──── tasks        &lt;–tasks任务</p>
+<p>│ └── main.yml</p>
+<p>├──── handlers      &lt;–handlers触发器</p>
+<p>│ └── main.yml</p>
+<p>├──── templates      &lt;–模板文件</p>
+<p>│ └── main.yml</p>
+<p>├──── vars        &lt;–变量</p>
+<p>│ └── main.yml</p>
+<p>├──── files        &lt;–文件 tar|zip</p>
+<p>├──── meta        &lt;–依赖间关系</p>
+<h2 id="Playbook语法检查及打印Debug信息"><a href="#Playbook语法检查及打印Debug信息" class="headerlink" title="Playbook语法检查及打印Debug信息"></a>Playbook语法检查及打印Debug信息</h2><p>l 语法检查</p>
+<p>ansible-playbook main.yml –syntax-check</p>
+<p>l 打印语句</p>
+<p>&lt;img src=’Ansible学习笔记/clip_image086.png)</p>
+<h2 id="Playbook自动化部署Nginx实例"><a href="#Playbook自动化部署Nginx实例" class="headerlink" title="Playbook自动化部署Nginx实例"></a>Playbook自动化部署Nginx实例</h2><p>Ø 创建playbook文件</p>
+<p>[root@goaccess playbook]# vim nginx.yml </p>
+<p>-–</p>
+<p>- hosts: webserver</p>
+<p> vars:</p>
+<p>  xiaochen: Ansible</p>
+<p> tasks:</p>
+<p> - name: add repo</p>
+<p>  yum_repository:</p>
+<p>   name: nginx</p>
+<p>   description: nginx repo</p>
+<p>   baseurl: <a href="http://nginx.org/packages/centos/7/$basearch/" target="_blank" rel="noopener">http://nginx.org/packages/centos/7/$basearch/</a></p>
+<p>   gpgcheck: no</p>
+<p>   enabled: 1</p>
+<p> - name: Intall nginx</p>
+<p>  yum:</p>
+<p>   name: nginx</p>
+<p>   state: latest</p>
+<p> - name: Copy nginx configuration file</p>
+<p>  copy:</p>
+<p>   src: /root/playbook/default.conf</p>
+<p>   dest: /etc/nginx/conf.d/default.conf</p>
+<p> - name: Start nginx</p>
+<p>  service:</p>
+<p>   name: nginx</p>
+<p>   state: started</p>
+<p> - name: Create wwwroot directory</p>
+<p>  file:</p>
+<p>   dest: /var/www/html</p>
+<p>   state: directory</p>
+<p> - name: Create test page index.html</p>
+<p>  shell: echo “hello “ &gt; /usr/share/nginx/html /index.html</p>
+<p>Ø 创建default.conf nginx配置文件</p>
+<p>server {</p>
+<p>  listen    80;</p>
+<p>  server_name localhost;</p>
+<p>  location / {</p>
+<p>​    root  /usr/share/nginx/html;</p>
+<p>​    index index.html index.htm;</p>
+<p>}</p>
+<p>}</p>
+<p>Ø 运行playbook文件，执行nginx自动化部署</p>
+<p>ansible-playbook nginx.yml</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image088.jpg">
+
+<p>Ø 访问nginx测试返回结果</p>
+<p>[root@goaccess playbook]# curl 192.168.137.10 -H “Host:localhost”</p>
+<p>hello Ansible</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image090.jpg">
+
+<h2 id="Playbook–handlers触发任务"><a href="#Playbook–handlers触发任务" class="headerlink" title="Playbook–handlers触发任务"></a>Playbook–handlers触发任务</h2><p>handlers是playbook的任务处理器，和前面使用到的task一样都是用来定义任务，区别在于handlers需要满足某些条件时才会触发任务操作，所以需要一个任务通知者notify对应的handler后，任务才会被执行。不管有多少个通知者notify了handler，都需要等到playbook中所有task执行完成后，最后才执行对应的handlers，而且只会被执行一次。</p>
+<p>ü handlers 用法：</p>
+<p>当 tasks 执行成功之后再执行 handlers，相当于 shell 中的 &amp;&amp; 用法，如果 tasks 执行失败是不会执行 handlers 语句</p>
+<p>l playbook创建tasks任务copy nginx配置文件，成功则触发handlers</p>
+<p>Ø 编写handlers测试playbook文件</p>
+<p>vim /yml/handlers.yml</p>
+<p>-–</p>
+<p>- hosts: nginxserver</p>
+<p> gather_facts: no</p>
+<p> remote_user: root</p>
+<p> tasks:</p>
+<p> - name: Copy nginx config file</p>
+<p>  copy:</p>
+<p>   src: site.conf</p>
+<p>   dest: /etc/nginx/conf.d/</p>
+<p>  notify:</p>
+<p>- reload nginx   ##只有该tasks执行完毕之后，notify才会调用名为reload nginx的handlers</p>
+<p> handlers:  </p>
+<p> - name: reload nginx  ##只有该名称的handlers被notify调用才会执行</p>
+<p>service: name=nginx state=reloaded</p>
+<p>##只有当配置文件发生修改才会触发notify调用handlers，否则不会执行handlers</p>
+<h2 id="Playbook–tags任务控制"><a href="#Playbook–tags任务控制" class="headerlink" title="Playbook–tags任务控制"></a>Playbook–tags任务控制</h2><p>tags可以帮助我们对任务进行打标签的操作，当任务存在标签以后，我们就可以在执行 playbook时，借助标签，指定执行哪些任务，或者指定不执行哪些任务</p>
+<p>参考文章：<a href="http://www.zsythink.net/archives/2641" target="_blank" rel="noopener">http://www.zsythink.net/archives/2641</a></p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image092.jpg">
+
+<h2 id="Playbook自动化部署Tomcat实例"><a href="#Playbook自动化部署Tomcat实例" class="headerlink" title="Playbook自动化部署Tomcat实例"></a>Playbook自动化部署Tomcat实例</h2><p>Ø 创建playbook自动化部署文件</p>
+<p>[root@goaccess playbook]# vim tomcat.yml </p>
+<p>-–</p>
+<p>- hosts: webserver</p>
+<p> gather_facts: no</p>
+<p> vars:</p>
+<p>  tomcat_version: 9.0.34</p>
+<p>  tomcat_install_dir: /usr/local</p>
+<p> tasks:</p>
+<p>  - name: Install jdk1.8</p>
+<p>   yum: name=java-1.8.0 state=present</p>
+<p>  - name: Download tomcat</p>
+<p>   get_url: url=<a href="https://mirror.bit.edu.cn/apache/tomcat/tomcat-9/v" target="_blank" rel="noopener">https://mirror.bit.edu.cn/apache/tomcat/tomcat-9/v</a>/bin/apache-tomcat-.tar.gz dest=/opt</p>
+<p>  - name: Unarchive tomcat-.tar.gz</p>
+<p>   unarchive:</p>
+<p>​    src: /opt/apache-tomcat-.tar.gz</p>
+<p>​    dest: ““</p>
+<p>​    copy: no</p>
+<p>  - name: Start tomcat</p>
+<p>   shell: cd  &amp;&amp;</p>
+<p>​       mv apache-tomcat- tomcat8 &amp;&amp;</p>
+<p>​       cd tomcat8/bin &amp;&amp; nohup ./startup.sh &amp;</p>
+<p>Ø 运行编写好的tomcat.yml文件实现自动化部署</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image094.jpg">
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image096.jpg">
+
+
+
+<h2 id="Playbook定义变量"><a href="#Playbook定义变量" class="headerlink" title="Playbook定义变量"></a>Playbook定义变量</h2><p>l Ansible定义变量的方式</p>
+<p>ü 命令行</p>
+<p>ü 在Inventory中定义</p>
+<p>ü 在Playbook中定义</p>
+<p>ü 在Roles中定义</p>
+<p>ü 注册变量（register）</p>
+<p>ü 系统信息变量（facts）</p>
+<p>Ø 在命令行中定义变量并传给playbook使用</p>
+<p>[root@goaccess playbook]# vim var.yml</p>
+<p>-–</p>
+<p>- hosts: webserver</p>
+<p> gather_facts: no</p>
+<p> remote_user: root</p>
+<p> tasks:</p>
+<p> - name: test var</p>
+<p>debug: msg=”“</p>
+<blockquote>
+<p>通过-e传入变量的值，被远程主机所调用</p>
+</blockquote>
+<p>[root@goaccess playbook]# ansible-playbook var.yml -e work_dir=/usr/local</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image098.jpg">
+
+
+
+<p>Ø 在Playbook中定义变量</p>
+<p>[root@goaccess playbook]# vim var.yml </p>
+<p>-–</p>
+<p>- hosts: webserver</p>
+<p> gather_facts: no</p>
+<p> remote_user: root</p>
+<p> vars:</p>
+<p>  - work_dir: /usr/local</p>
+<p>  - nginx_version: 1.15</p>
+<p> tasks:</p>
+<p> - name: test var</p>
+<p>debug: msg=”/nginx“</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image100.jpg">
+
+
+
+<p>Ø 注册变量（register）</p>
+<p>-–</p>
+<p>- hosts: webserver</p>
+<p> gather_facts: no</p>
+<p> remote_user: root</p>
+<p> vars:</p>
+<p>  - work_dir: /usr/local</p>
+<p>  - nginx_version: 1.15</p>
+<p> tasks:</p>
+<p> - name: register var</p>
+<p>  command: date +”%F_%T”</p>
+<p>  register: datetime</p>
+<p> - name: touch file</p>
+<p>file: dest=/tmp/X_ state=touch</p>
+<p>##register为注册变量，将动态的内容保存为变量引用</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image102.jpg">
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image104.jpg">
+
+
+
+<p>Ø 系统信息变量faccts</p>
+<p>-–</p>
+<p>- hosts: webserver</p>
+<p> gather_facts: no</p>
+<p> remote_user: root</p>
+<p> vars:</p>
+<p>  - work_dir: /usr/local</p>
+<p>  - nginx_version: 1.15</p>
+<p> tasks:</p>
+<p> - name: touch file</p>
+<p>file: dest=/tmp/T_ state=touch</p>
+<p>##直接引用系统变量</p>
+<h1 id="第四节：Playbook文件复用"><a href="#第四节：Playbook文件复用" class="headerlink" title="第四节：Playbook文件复用"></a>第四节：Playbook文件复用</h1><h2 id="include-amp-import"><a href="#include-amp-import" class="headerlink" title="include &amp; import"></a>include &amp; import</h2><p>l include*（动态）：在运行时导入</p>
+<p>Ø –list-tags,–list-tasks不会显示到输出</p>
+<p>Ø 不能使用notify出发来自include*内处理程序名称（handlers）</p>
+<p>l import*（静态）：在Playbook解析时预先导入</p>
+<p>Ø 不能与循环一起使用</p>
+<p>Ø 将变量用于目标文件或角色名称时，不能使用inventory中的变量</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image106.jpg">
+
+
+
+
+
+<h2 id="include-tasks-amp-import-tasks"><a href="#include-tasks-amp-import-tasks" class="headerlink" title="include_tasks &amp; import_tasks"></a>include_tasks &amp; import_tasks</h2><img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image108.jpg">
+
+<p>##include &amp; import文件对于不同主机操作，include_tasks &amp; import_tasks文件对于同主机的不同任务，简化main.yml文件</p>
+<h1 id="第五节：Playbook流程控制"><a href="#第五节：Playbook流程控制" class="headerlink" title="第五节：Playbook流程控制"></a>第五节：Playbook流程控制</h1><h2 id="Playbook流程控制—条件"><a href="#Playbook流程控制—条件" class="headerlink" title="Playbook流程控制—条件"></a>Playbook流程控制—条件</h2><img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image110.jpg">
+
+<table><tr><td bgcolor="#54FF9F">##when判断：只有当Ip等于192.168.1.12时才会执行该tasks中的操作</td></tr></table>
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image112.jpg">
+
+<h2 id="Playbook流程控制—循环"><a href="#Playbook流程控制—循环" class="headerlink" title="Playbook流程控制—循环"></a>Playbook流程控制—循环</h2><img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image114.jpg">
+
+<h3 id="with-list和loop序列循环"><a href="#with-list和loop序列循环" class="headerlink" title="with_list和loop序列循环"></a>with_list和loop序列循环</h3><p>Ø with_list循环</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">[root@goaccess playbook]# cat with.yml </span><br><span class="line"></span><br><span class="line">\---</span><br><span class="line"></span><br><span class="line">\- hosts: webserver</span><br><span class="line"></span><br><span class="line"> gather_facts: no</span><br><span class="line"></span><br><span class="line"> tasks: </span><br><span class="line"></span><br><span class="line">  \- name: with_list</span><br><span class="line"></span><br><span class="line">   debug: msg="&#123;&#123;item&#125;&#125;"</span><br><span class="line"></span><br><span class="line">   with_list:</span><br><span class="line"></span><br><span class="line">    \- one</span><br><span class="line"></span><br><span class="line">    \- two</span><br></pre></td></tr></table></figure>
+
+
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image116.jpg">
+
+<p>Ø loop循环</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">[root@goaccess playbook]# cat loop.yml </span><br><span class="line"></span><br><span class="line">\---</span><br><span class="line"></span><br><span class="line">\- hosts: webserver</span><br><span class="line"></span><br><span class="line"> gather_facts: no</span><br><span class="line"></span><br><span class="line"> tasks: </span><br><span class="line"></span><br><span class="line">  \- name: with_list -&gt; loop</span><br><span class="line"></span><br><span class="line">   debug: msg="&#123;&#123;item&#125;&#125;"</span><br><span class="line"></span><br><span class="line">   loop:</span><br><span class="line"></span><br><span class="line">    \- 1</span><br><span class="line"></span><br><span class="line">    \- 2</span><br></pre></td></tr></table></figure>
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image118.jpg">
+
+<h3 id="with-items和loop字典循环"><a href="#with-items和loop字典循环" class="headerlink" title="with_items和loop字典循环"></a>with_items和loop字典循环</h3><p>Ø with_items循环</p>
+<p>-–</p>
+<p>- hosts: webserver</p>
+<p> gather_facts: no</p>
+<p> tasks:</p>
+<p>  - name: with_items</p>
+<p>   #debug: msg=”“</p>
+<p>   user: name= groups= state=present</p>
+<p>   with_items:</p>
+<p>​    - {name: ‘zhangsan’, groups: ‘nginx’}</p>
+<p>​    - {name: ‘lisi’, groups: ‘nginx’}</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image120.jpg">
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image122.jpg">
+
+<p>Ø loop循环</p>
+<p>-–</p>
+<p>- hosts: webserver</p>
+<p> gather_facts: no</p>
+<p> tasks:</p>
+<p>  - name: with_items -&gt; loop</p>
+<p>   user: name= state=present</p>
+<p>   loop:</p>
+<p>​    - wangwu</p>
+<p>​    - zhaomo</p>
+<p>   tags: loop</p>
+<p>  - name: with_items</p>
+<p>   #debug: msg=”“</p>
+<p>   user: name= groups= state=present</p>
+<p>   with_items:</p>
+<p>​    - {name: ‘zhangsan’, groups: ‘nginx’}</p>
+<p>​    - {name: ‘lisi’, groups: ‘nginx’}</p>
+<p>   tags: itmes</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image124.jpg">
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image126.jpg">
+
+
+
+<h1 id="第六节：Playbook模板—jinja2"><a href="#第六节：Playbook模板—jinja2" class="headerlink" title="第六节：Playbook模板—jinja2"></a>第六节：Playbook模板—jinja2</h1><p>Ø jinja循环</p>
+<p>[root@goaccess playbook]# vim j2.yml</p>
+<p>-–</p>
+<p>- hosts: webserver</p>
+<p> gather_facts: no</p>
+<p> vars:</p>
+<p>  hello: ansible</p>
+<p> tasks:</p>
+<p>- template: src=f.j2 dest=/etc/nginx/conf.d/</p>
+<p>[root@goaccess playbook]# vim f.j2</p>
+
+
+
+
+  one
+
+
+
+  two
+
+
+
+  three
+
+
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image128.jpg">
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image130.jpg">
+
+<p>Ø jinja判断</p>
+
+
+   ##循环
+
+   ##判断结束
+
+   ##循环
+
+   ##判断
+
+   -> two
+
+   ##判断结束
+
+   ##循环
+
+   ##判断结束
+
+ ##循环结束
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image132.jpg">
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image134.jpg">
+
+<p>Ø jinja多分支判断</p>
+<p>[root@goaccess playbook]# cat f.j2 </p>
+
+
+
+
+  
+
+
+
+  
+
+   -> 222
+
+  
+
+
+
+  
+
+   -> 333
+
+  
+
+
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image136.jpg">
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image138.jpg">
+
+<p>Ø jinja模板接收变量</p>
+<p>[root@goaccess playbook]# cat f.j2 </p>
+
+
+
+
+  
+
+
+
+  
+
+   -> 222
+
+  
+
+
+
+  
+
+   -> 333
+
+  
+
+
+
+
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image140.jpg">
+
+<p>Ø jinja字典循环</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@goaccess playbook]# vim f.j2</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">&#123;% set list&#x3D;[&#39;one&#39;,&#39;two&#39;,&#39;three&#39;]%&#125;</span><br><span class="line"></span><br><span class="line">&#123;% for i in list %&#125;</span><br><span class="line"></span><br><span class="line">  &#123;% if i &#x3D;&#x3D; &#39;two&#39; %&#125;</span><br><span class="line"></span><br><span class="line">   -&gt; 222</span><br><span class="line"></span><br><span class="line">  &#123;% elif i &#x3D;&#x3D; &#39;three&#39; %&#125;</span><br><span class="line"></span><br><span class="line">   -&gt; 333</span><br><span class="line"></span><br><span class="line">  &#123;% endif %&#125;</span><br><span class="line"></span><br><span class="line">&#123;% endfor %&#125;</span><br><span class="line"></span><br><span class="line">&#123;&#123;hello&#125;&#125;</span><br><span class="line"></span><br><span class="line"> </span><br><span class="line"></span><br><span class="line">&#123;% set dict&#x3D;&#123;&#39;haha&#39;: 26, &#39;hehe&#39;: 32&#125; %&#125;  ##定义字典</span><br><span class="line"></span><br><span class="line"> </span><br><span class="line"></span><br><span class="line">&#123;% for key, value in dict.iteritems() %&#125;  ##循环字典内容</span><br><span class="line"></span><br><span class="line">  &#123;&#123;key&#125;&#125; -&gt; &#123;&#123;value&#125;&#125;</span><br><span class="line"></span><br><span class="line">&#123;% endfor %&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="使用jinja2管理nginx配置文件"><a href="#使用jinja2管理nginx配置文件" class="headerlink" title="使用jinja2管理nginx配置文件"></a>使用jinja2管理nginx配置文件</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@goaccess playbook]# vim j2.yml</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">\---</span></span><br><span class="line"></span><br><span class="line"><span class="string">\-</span> <span class="attr">hosts:</span> <span class="string">webserver</span></span><br><span class="line"></span><br><span class="line"> <span class="attr">gather_facts:</span> <span class="literal">no</span></span><br><span class="line"></span><br><span class="line"> <span class="attr">vars:</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">http_port:</span> <span class="number">80</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">server_name:</span> <span class="string">www.xiaochen.com</span></span><br><span class="line"></span><br><span class="line"> <span class="attr">tasks:</span></span><br><span class="line"></span><br><span class="line"><span class="string">\-</span> <span class="attr">name:</span> <span class="string">edit</span> <span class="string">nginx</span> <span class="string">config</span> <span class="string">file</span></span><br><span class="line"></span><br><span class="line">   <span class="attr">template:</span> <span class="string">src=default.j2</span> <span class="string">dest=/etc/nginx/conf.d/default.conf</span></span><br><span class="line"></span><br><span class="line">   <span class="attr">notify:</span> <span class="string">reload</span> <span class="string">nginx</span></span><br><span class="line"></span><br><span class="line"> <span class="attr">handlers:</span></span><br><span class="line"></span><br><span class="line">  <span class="string">\-</span> <span class="attr">name:</span> <span class="string">reload</span> <span class="string">nginx</span></span><br><span class="line"></span><br><span class="line">   <span class="attr">service:</span> <span class="string">name=nginx</span> <span class="string">state=reloaded</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@goaccess playbook]# vim default.j2</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line"></span><br><span class="line">  listen    &#123;&#123;http_port&#125;&#125;;</span><br><span class="line"></span><br><span class="line">  server_name &#123;&#123;server_name&#125;&#125;;</span><br><span class="line"></span><br><span class="line">  location &#x2F; &#123;</span><br><span class="line"></span><br><span class="line">    root  &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html;</span><br><span class="line"></span><br><span class="line">    index index.html index.htm;</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image142.jpg">
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image144.jpg">
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image146.jpg">
+
+
+
+<p>Ø 配置default.j2，使其完成反向代理多主机自动配置</p>
+<p>[root@goaccess playbook]# vim default.j2 </p>
+<p>server {</p>
+
+
+<p>upstream </p>
+  
+
+  server 192.168.1.10:80
+
+  
+
+  server 192.168.1.12:80
+
+  
+
+  server 192.168.1.190:80
+
+  
+
+  server 192.168.1.188:80
+
+  
+
+
+
+<p>server {</p>
+<p>  listen    ;</p>
+<p>  server_name ;</p>
+<p>  location / {</p>
+<p>​    root  /usr/share/nginx/html;</p>
+<p>​    index index.html index.htm;</p>
+<p>  }</p>
+<p>}</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image148.jpg">
+
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image150.jpg">
+
+
+
+
+
+<h1 id="第七节：Ansile—Roles（角色）"><a href="#第七节：Ansile—Roles（角色）" class="headerlink" title="第七节：Ansile—Roles（角色）"></a>第七节：Ansile—Roles（角色）</h1><h2 id="Roles目录结构"><a href="#Roles目录结构" class="headerlink" title="Roles目录结构"></a>Roles目录结构</h2><p>site.yml  ##主配置文件，操作时执行的文件</p>
+<p>webservers.yml ##web服务器部署文件</p>
+<p>database.yml ##数据库部署文件</p>
+<p>roles/</p>
+<p> common/</p>
+<p>files/</p>
+<p>templates/   ##角色部署时用到的模板</p>
+<p>tasks/     ##包含角色要执行的主要任务列表</p>
+<p>handlers/    ##包含角色使用的处理程序</p>
+<p>vars/      ##角色其他的变量</p>
+<p>defaults/    ##角色默认的变量</p>
+<p>meta/      ##角色定义的一些元数据</p>
+<p>webserver/</p>
+<p>files/</p>
+<p>templates/</p>
+<p>tasks/</p>
+<p>handlers/</p>
+<p>vars/</p>
+<p>示例参考：<a href="https://github.com/ansible/ansible-examples" target="_blank" rel="noopener">https://github.com/ansible/ansible-examples</a></p>
+<h2 id="Roles基本使用"><a href="#Roles基本使用" class="headerlink" title="Roles基本使用"></a>Roles基本使用</h2><img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image152.jpg">
+
+<p>l roles目录结构演示</p>
+<p>Ø 执行流程结构展示</p>
+<p>[root@goaccess roles-demo]# mkdir roles/{common,nginx,php}/{files,templates,tasks,handlers}</p>
+<p>[root@goaccess roles-demo]# vim hosts </p>
+<p>[webserver]</p>
+<p>192.168.137.10</p>
+<p>[dbserver]</p>
+<p>192.168.137.190</p>
+<p>[root@goaccess roles-demo]# vim site.yml </p>
+<p>- hosts: webserver</p>
+<p> gather_facts: no</p>
+<p> roles:</p>
+<p>  - common</p>
+<p>  - nginx</p>
+<p>- php</p>
+<p>[root@goaccess roles-demo]# vim roles/common/tasks/main.yml</p>
+<p>- name: common tesk test</p>
+<p> debug: msg=”common task test”</p>
+<p>[root@goaccess roles-demo]# vim roles/nginx/tasks/main.yml</p>
+<p>- name: nginx task test</p>
+<p> debug: msg=”nginx task test”</p>
+<p>[root@goaccess roles-demo]# vim roles/php/tasks/main.yml </p>
+<p>- name: php task test</p>
+<p> debug: msg=”php task test”</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image154.jpg">
+
+<p>Ø 公共变量定义</p>
+<p>[root@goaccess roles-demo]# vim group_vars/all</p>
+<p>nginx_version: 1.15</p>
+<p>php_version: 5.6</p>
+<p>[root@goaccess roles-demo]# vim roles/nginx/tasks/main.yml </p>
+<p>- name: nginx task test</p>
+<p> debug: msg=”nginx task test -&gt; “</p>
+<p>[root@goaccess roles-demo]# vim roles/php/tasks/main.yml </p>
+<p>- name: php task test</p>
+<p> debug: msg=”php task test -&gt; “</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image156.jpg">
+
+<p>Ø tags标签使用</p>
+<p>[root@goaccess roles-demo]# cat site.yml </p>
+<p>- hosts: webserver</p>
+<p> gather_facts: no</p>
+<p> roles:</p>
+<p>  - role: common</p>
+<p>  - role: nginx</p>
+<p>   tags: nginx</p>
+<p>  - role: php</p>
+<p>   tags: php</p>
+<img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image158.jpg">
+
+<h1 id="Ansible部署LNMP环境实战"><a href="#Ansible部署LNMP环境实战" class="headerlink" title="Ansible部署LNMP环境实战"></a>Ansible部署LNMP环境实战</h1><img src="/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/clip_image160.jpg">
+
+
+    </div>
+
+    
+    
+    
+
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+      
+    </div>
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>晓晨
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://yoursite.com/2020/06/02/Ansible%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="Ansible学习笔记">http://yoursite.com/2020/06/02/Ansible学习笔记/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/06/02/Mycat%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="prev" title="Mycat学习笔记">
+      <i class="fa fa-chevron-left"></i> Mycat学习笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/06/02/Docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="next" title="Docker学习笔记">
+      Docker学习笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#第一节：Ansible入门"><span class="nav-number">1.</span> <span class="nav-text">第一节：Ansible入门</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Ansible配置文件"><span class="nav-number">1.1.</span> <span class="nav-text">Ansible配置文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ansible-–Inventory主机列表"><span class="nav-number">1.2.</span> <span class="nav-text">Ansible –Inventory主机列表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ansible–ad-hoc命令行操作"><span class="nav-number">1.3.</span> <span class="nav-text">Ansible–ad-hoc命令行操作</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第二节：ansible常用模块"><span class="nav-number">2.</span> <span class="nav-text">第二节：ansible常用模块</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Ansible-u参数使用方法"><span class="nav-number">2.1.</span> <span class="nav-text">Ansible-u参数使用方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ansible—copy模块使用方法"><span class="nav-number">2.2.</span> <span class="nav-text">Ansible—copy模块使用方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ansible—file模块使用方法"><span class="nav-number">2.3.</span> <span class="nav-text">Ansible—file模块使用方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ansible–yum模块使用方法"><span class="nav-number">2.4.</span> <span class="nav-text">Ansible–yum模块使用方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ansible—user模块使用方法"><span class="nav-number">2.5.</span> <span class="nav-text">Ansible—user模块使用方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ansible—Git模块使用方法"><span class="nav-number">2.6.</span> <span class="nav-text">Ansible—Git模块使用方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ansible—server模块使用方法"><span class="nav-number">2.7.</span> <span class="nav-text">Ansible—server模块使用方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ansible—setup模块使用方法"><span class="nav-number">2.8.</span> <span class="nav-text">Ansible—setup模块使用方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第三节：Playbook基本使用"><span class="nav-number">3.</span> <span class="nav-text">第三节：Playbook基本使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Playbook语法检查及打印Debug信息"><span class="nav-number">3.1.</span> <span class="nav-text">Playbook语法检查及打印Debug信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Playbook自动化部署Nginx实例"><span class="nav-number">3.2.</span> <span class="nav-text">Playbook自动化部署Nginx实例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Playbook–handlers触发任务"><span class="nav-number">3.3.</span> <span class="nav-text">Playbook–handlers触发任务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Playbook–tags任务控制"><span class="nav-number">3.4.</span> <span class="nav-text">Playbook–tags任务控制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Playbook自动化部署Tomcat实例"><span class="nav-number">3.5.</span> <span class="nav-text">Playbook自动化部署Tomcat实例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Playbook定义变量"><span class="nav-number">3.6.</span> <span class="nav-text">Playbook定义变量</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第四节：Playbook文件复用"><span class="nav-number">4.</span> <span class="nav-text">第四节：Playbook文件复用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#include-amp-import"><span class="nav-number">4.1.</span> <span class="nav-text">include &amp; import</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#include-tasks-amp-import-tasks"><span class="nav-number">4.2.</span> <span class="nav-text">include_tasks &amp; import_tasks</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第五节：Playbook流程控制"><span class="nav-number">5.</span> <span class="nav-text">第五节：Playbook流程控制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Playbook流程控制—条件"><span class="nav-number">5.1.</span> <span class="nav-text">Playbook流程控制—条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Playbook流程控制—循环"><span class="nav-number">5.2.</span> <span class="nav-text">Playbook流程控制—循环</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#with-list和loop序列循环"><span class="nav-number">5.2.1.</span> <span class="nav-text">with_list和loop序列循环</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#with-items和loop字典循环"><span class="nav-number">5.2.2.</span> <span class="nav-text">with_items和loop字典循环</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第六节：Playbook模板—jinja2"><span class="nav-number">6.</span> <span class="nav-text">第六节：Playbook模板—jinja2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用jinja2管理nginx配置文件"><span class="nav-number">6.1.</span> <span class="nav-text">使用jinja2管理nginx配置文件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第七节：Ansile—Roles（角色）"><span class="nav-number">7.</span> <span class="nav-text">第七节：Ansile—Roles（角色）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Roles目录结构"><span class="nav-number">7.1.</span> <span class="nav-text">Roles目录结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Roles基本使用"><span class="nav-number">7.2.</span> <span class="nav-text">Roles基本使用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Ansible部署LNMP环境实战"><span class="nav-number">8.</span> <span class="nav-text">Ansible部署LNMP环境实战</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="晓晨"
+      src="/images/touxiang.jpg">
+  <p class="site-author-name" itemprop="name">晓晨</p>
+  <div class="site-description" itemprop="description">乱世浮尘，不堪遥望，唯有情意，晨光依旧</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <script src="https://soyawww.github.io/live2d/autoload.js"></script>
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">晓晨</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
